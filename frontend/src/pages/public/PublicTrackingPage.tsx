@@ -98,11 +98,11 @@ export const PublicTrackingPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <Navigation className="h-5 w-5 text-indigo-600" />
+                <Navigation className="h-5 w-5 text-brand-500" />
                 <h1 className="text-xl font-black text-slate-900">Live Package Tracker</h1>
               </div>
               <p className="text-sm text-slate-500">
-                Track any shipment across the GATIMAN logistics network with real-time GPS telemetry.
+                Track any shipment across the Ship It logistics network with real-time GPS telemetry.
               </p>
             </div>
 
@@ -115,13 +115,13 @@ export const PublicTrackingPage: React.FC = () => {
                   value={inputVal}
                   onChange={(e) => setInputVal(e.target.value)}
                   placeholder="Enter Tracking ID..."
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-3 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-400 focus:bg-white focus:ring-2 focus:ring-indigo-500/15 transition font-mono"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-3 text-sm text-slate-900 placeholder-slate-400 focus:border-brand-500 focus:bg-white focus:ring-2 focus:ring-brand-500/15 transition font-mono"
                 />
               </div>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition disabled:opacity-50 cursor-pointer"
+                className="rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 transition disabled:opacity-50 cursor-pointer shadow-sm shadow-brand-500/20"
               >
                 Track
               </button>

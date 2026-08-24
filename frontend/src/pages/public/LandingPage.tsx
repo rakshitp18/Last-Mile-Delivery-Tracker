@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { orderApi } from '../../api/orderApi';
 import { trackingApi, LiveTrackingData } from '../../api/trackingApi';
 import { Order, TrackingEvent, OrderStatus } from '../../types';
-import { DeliveryVideoPlayer } from '../../components/common/DeliveryVideoPlayer';
 import { GatimanLogo } from '../../components/common/GatimanLogo';
+import { ConveyorHero3D } from '../../components/common/ConveyorHero3D';
 import {
   Truck, Search, ArrowRight, Star, Users, Building2,
-  Radio, ChevronLeft, ChevronRight, AlertCircle, Play, X,
+  Radio, ChevronLeft, ChevronRight, AlertCircle, X,
   ChevronDown, Navigation, CheckCircle2, UserCheck, RefreshCw, Shield, MapPin, Clock, Phone, Package, ShieldCheck, User
 } from 'lucide-react';
 
@@ -35,9 +35,18 @@ export const LandingPage: React.FC = () => {
   const [previewOrder, setPreviewOrder] = useState<Order | null>(null);
   const [previewLiveTracking, setPreviewLiveTracking] = useState<LiveTrackingData | null>(null);
   const [trackingTimeline, setTrackingTimeline] = useState<TrackingEvent[]>([]);
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
   const [activeServiceSlide, setActiveServiceSlide] = useState(0);
+  const [isSliderPaused, setIsSliderPaused] = useState(false);
+
+  // Auto-advance services slider
+  useEffect(() => {
+    if (isSliderPaused) return;
+    const interval = setInterval(() => {
+      setActiveServiceSlide((prev) => (prev + 1) % 4);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isSliderPaused]);
 
   const handleQuickTrackSubmit = async (e?: React.FormEvent, customId?: string) => {
     if (e) e.preventDefault();
@@ -153,7 +162,7 @@ export const LandingPage: React.FC = () => {
   const faqs = [
     {
       q: 'Which cities and corridors do you cover for inter-city delivery?',
-      a: 'GATIMAN connects all major hubs across Delhi NCR (Delhi, Noida, Gurugram, Ghaziabad, Faridabad) and high-speed inter-city corridors including Jaipur, Chandigarh, Lucknow, Agra, and Ludhiana.',
+      a: 'Ship It connects all major hubs across Delhi NCR (Delhi, Noida, Gurugram, Ghaziabad, Faridabad) and high-speed inter-city corridors including Jaipur, Chandigarh, Lucknow, Agra, and Ludhiana.',
     },
     {
       q: 'How quickly are inter-city consignments picked up and delivered?',
@@ -170,7 +179,7 @@ export const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] text-slate-900 font-sans selection:bg-orange-500 selection:text-white">
+    <div className="min-h-screen bg-[#FCFCFC] text-slate-900 font-sans selection:bg-brand-500 selection:text-white">
       
       {/* ─────────────────────────────────────────────────────────────────────────────
           1. FLOATING NAVIGATION BAR (Glass Capsule with Track Live Radar)
@@ -179,20 +188,20 @@ export const LandingPage: React.FC = () => {
         <div className="flex items-center justify-between gap-3 pointer-events-auto">
           
           {/* Logo with Scooter Icon */}
-          <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-full border border-slate-200/80 shadow-sm transition hover:shadow-md">
+          <div className="bg-white/95 backdrop-blur-md px-4 py-2 rounded-full border border-slate-200/80 shadow-xs transition hover:shadow-md">
             <GatimanLogo to="/" />
           </div>
 
           {/* Center Navigation Capsule with Prominent Track Live Radar */}
-          <nav className="hidden md:flex items-center gap-1.5 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-200/80 shadow-sm text-xs font-semibold text-slate-600">
+          <nav className="hidden md:flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-200/80 shadow-xs text-xs font-semibold text-slate-600">
             <a href="#home" className="px-4 py-2 rounded-full bg-slate-900 text-white font-bold transition shadow-xs">
               Home
             </a>
-            <a href="#services" className="px-3.5 py-2 rounded-full hover:text-slate-900 transition flex items-center gap-1">
+            <a href="#services" className="px-3.5 py-2 rounded-full hover:text-brand-500 transition flex items-center gap-1">
               Services <ChevronDown className="w-3 h-3 text-slate-400" />
             </a>
             
-            {/* Prominent Track Live Radar Nav Button */}
+            {/* Prominent Track Live Radar Nav Button (Zomato Style) */}
             <a
               href="#tracking"
               onClick={(e) => {
@@ -201,13 +210,13 @@ export const LandingPage: React.FC = () => {
                 const input = document.getElementById('tracking-radar-input') as HTMLInputElement | null;
                 if (input) input.focus();
               }}
-              className="px-3.5 py-1.5 rounded-full font-bold text-orange-700 bg-orange-100/80 hover:bg-orange-200/80 border border-orange-300/80 transition flex items-center gap-1.5 shadow-xs"
+              className="px-3.5 py-1.5 rounded-full font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 border border-brand-200 transition flex items-center gap-1.5 shadow-xs"
             >
-              <Radio className="w-3.5 h-3.5 text-orange-600 animate-pulse" />
+              <Radio className="w-3.5 h-3.5 text-brand-500 animate-pulse" />
               <span>Track Live Radar</span>
             </a>
 
-            <a href="#faq" className="px-3.5 py-2 rounded-full hover:text-slate-900 transition">
+            <a href="#faq" className="px-3.5 py-2 rounded-full hover:text-brand-500 transition">
               FAQ
             </a>
           </nav>
@@ -256,7 +265,7 @@ export const LandingPage: React.FC = () => {
           <div className="relative group flex items-center justify-center">
             <Link
               to="/register/customer"
-              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-orange-600 to-amber-500 text-white flex items-center justify-center shadow-md shadow-orange-600/30 hover:scale-110 active:scale-95 transition-all duration-200"
+              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-brand-600 to-rose-500 text-white flex items-center justify-center shadow-md shadow-brand-600/30 hover:scale-110 active:scale-95 transition-all duration-200"
               aria-label="Sign in as Customer"
             >
               <User className="w-5 h-5" />
@@ -266,10 +275,10 @@ export const LandingPage: React.FC = () => {
             <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center pointer-events-none animate-in fade-in slide-in-from-right-3 duration-200">
               <div className="bg-slate-950/95 backdrop-blur-md text-white text-xs px-3.5 py-2 rounded-2xl border border-slate-800 shadow-2xl whitespace-nowrap flex flex-col">
                 <span className="font-bold text-white flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
                   <span>Sign in as Customer</span>
                 </span>
-                <span className="text-[10px] text-orange-400 font-medium mt-0.5">New Customer Portal ➔</span>
+                <span className="text-[10px] text-brand-400 font-medium mt-0.5">New Customer Portal ➔</span>
               </div>
             </div>
           </div>
@@ -278,83 +287,37 @@ export const LandingPage: React.FC = () => {
       </aside>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          2. HERO SECTION WITH INDUSTRIAL CONTAINER BACKGROUND
+          2. HERO SECTION WITH ANIMATED LOGISTICS CONVEYOR BELT BACKGROUND
       ───────────────────────────────────────────────────────────────────────────── */}
       <section id="home" className="relative pt-24 pb-12 px-4 sm:px-8 max-w-7xl mx-auto">
         <div className="relative rounded-[2.5rem] overflow-hidden min-h-[580px] sm:min-h-[640px] flex flex-col justify-end p-6 sm:p-12 shadow-2xl border border-slate-200">
           
-          {/* Background Image Container with Cinematic Lighting */}
-          <div 
-            className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 scale-105"
-            style={{ backgroundImage: `url('/images/gatiman_hero_container.jpg')` }}
-          >
-            {/* Cinematic Gradient Overlays for readable text */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/50" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-transparent" />
-          </div>
+          {/* Photorealistic 3D WebGL Conveyor Simulation */}
+          <ConveyorHero3D />
 
           {/* Middle / Bottom Content Grid */}
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+          <div className="relative z-10 max-w-3xl space-y-6">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-heading font-black text-white leading-[1.05] tracking-tight">
+              Ready to accelerate your inter-city delivery?
+            </h1>
             
-            {/* Left: Bold Inter-City Delivery Typography */}
-            <div className="lg:col-span-8 space-y-6">
-              <h1 className="text-4xl sm:text-6xl md:text-7xl font-heading font-black text-white leading-[1.05] tracking-tight max-w-2xl">
-                Ready to accelerate your inter-city delivery?
-              </h1>
-              
-              <div className="flex flex-wrap items-center gap-3 pt-2">
-                <Link
-                  to="/register/customer"
-                  className="px-6 py-3.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 text-white font-bold text-sm transition flex items-center gap-2"
-                >
-                  <span>Book Doorstep Pickup</span>
-                  <ArrowRight className="w-4 h-4 text-orange-400" />
-                </Link>
-
-                <a
-                  href="#tracking"
-                  className="px-6 py-3.5 rounded-full bg-orange-600 hover:bg-orange-700 text-white font-bold text-sm transition shadow-lg shadow-orange-900/40 flex items-center gap-2"
-                >
-                  <Search className="w-4 h-4" />
-                  <span>Track Consignment</span>
-                </a>
-              </div>
-            </div>
-
-            {/* Right: Floating "See how we work" Video Card */}
-            <div className="lg:col-span-4 flex justify-start lg:justify-end">
-              <div 
-                onClick={() => setIsVideoModalOpen(true)}
-                className="group cursor-pointer bg-gradient-to-br from-stone-900/90 via-amber-950/80 to-stone-900/90 backdrop-blur-xl border border-white/20 rounded-3xl p-4 sm:p-5 flex items-center justify-between gap-4 max-w-sm shadow-2xl hover:border-orange-500/50 transition-all duration-300 hover:scale-[1.02]"
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <Link
+                to="/register/customer"
+                className="px-6 py-3.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 text-white font-bold text-sm transition flex items-center gap-2"
               >
-                <div>
-                  <div className="text-[11px] font-mono font-black text-orange-400 tracking-wider">
-                    01 <span className="text-white/40">/ 03</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-white mt-1 leading-snug">
-                    See how dispatch works.
-                  </h3>
-                  <p className="text-xs text-white/70 mt-0.5">
-                    Real-time sorting & EV corridor dispatch.
-                  </p>
-                </div>
+                <span>Book Doorstep Pickup</span>
+                <ArrowRight className="w-4 h-4 text-brand-400" />
+              </Link>
 
-                {/* Video Thumbnail with Play Badge */}
-                <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border border-white/30 shrink-0 shadow-md">
-                  <img 
-                    src="/images/video_worker_thumb.jpg" 
-                    alt="Operations Engineer" 
-                    className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
-                  />
-                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                    <div className="w-8 h-8 rounded-full bg-white/90 text-slate-900 flex items-center justify-center shadow-lg group-hover:bg-orange-500 group-hover:text-white transition">
-                      <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <a
+                href="#tracking"
+                className="px-6 py-3.5 rounded-full bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm transition shadow-lg shadow-brand-900/40 flex items-center gap-2"
+              >
+                <Search className="w-4 h-4" />
+                <span>Track Consignment</span>
+              </a>
             </div>
-
           </div>
         </div>
       </section>
@@ -368,8 +331,8 @@ export const LandingPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <div>
               <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                <Radio className="w-5 h-5 text-orange-600 animate-pulse" />
-                <span>Live Inter-City Radar & Parcel Tracking</span>
+                <Radio className="w-5 h-5 text-brand-500 animate-pulse" />
+                <span>Live Inter-City Radar &amp; Parcel Tracking</span>
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 Instant GPS telemetry, corridor transit status, and automated driver ETA countdown.
@@ -391,24 +354,24 @@ export const LandingPage: React.FC = () => {
           <form onSubmit={handleQuickTrackSubmit} className="flex flex-col md:flex-row items-center gap-3">
             <div className="relative flex-1 w-full">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-orange-500" />
+                <Search className="h-5 w-5 text-brand-500" />
               </div>
               <input
                 id="tracking-radar-input"
                 type="text"
                 value={trackingInput}
                 onChange={(e) => setTrackingInput(e.target.value)}
-                placeholder="Enter GATIMAN tracking number (e.g. GTM-20260824-196623)..."
-                className="w-full pl-11 pr-4 py-3.5 text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 font-mono transition"
+                placeholder="Enter Ship It tracking number (e.g. GTM-20260824-196623)..."
+                className="w-full pl-11 pr-4 py-3.5 text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 font-mono transition"
               />
             </div>
             
             <button
               type="submit"
               disabled={isSearching}
-              className="w-full md:w-auto px-8 py-3.5 bg-slate-900 hover:bg-black text-white text-sm font-bold rounded-2xl transition flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
+              className="w-full md:w-auto px-8 py-3.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold rounded-2xl transition flex items-center justify-center gap-2 shadow-md shadow-brand-500/20 cursor-pointer disabled:opacity-50"
             >
-              {isSearching ? <span className="animate-spin">↻</span> : <Radio className="w-4 h-4 text-orange-400" />}
+              {isSearching ? <span className="animate-spin">↻</span> : <Radio className="w-4 h-4 text-white" />}
               <span>Track Live</span>
             </button>
           </form>
@@ -466,7 +429,7 @@ export const LandingPage: React.FC = () => {
                           <div
                             className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
                               isCurrent
-                                ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/40 ring-4 ring-orange-500/20 scale-110'
+                                ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/40 ring-4 ring-brand-500/20 scale-110'
                                 : isCompleted
                                 ? 'bg-emerald-500 text-white'
                                 : 'bg-slate-800 text-slate-500 border border-slate-700'
@@ -475,7 +438,7 @@ export const LandingPage: React.FC = () => {
                             <StepIcon className="w-4 h-4" />
                           </div>
                           <span className={`text-[11px] font-bold mt-2 ${
-                            isCurrent ? 'text-orange-400' : isCompleted ? 'text-slate-200' : 'text-slate-500'
+                            isCurrent ? 'text-brand-400' : isCompleted ? 'text-slate-200' : 'text-slate-500'
                           }`}>
                             {step.label}
                           </span>
@@ -520,17 +483,17 @@ export const LandingPage: React.FC = () => {
                 {/* Left: Origin & Destination Route Card */}
                 <div className="p-5 rounded-3xl bg-slate-50/80 border border-slate-200 space-y-4">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-orange-600" />
-                    <span>Corridor Route & Addresses</span>
+                    <MapPin className="w-4 h-4 text-brand-500" />
+                    <span>Corridor Route &amp; Addresses</span>
                   </h4>
 
                   {/* Pickup Endpoint */}
                   <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-                    <div className="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <div className="w-8 h-8 rounded-full bg-brand-50 text-brand-500 flex items-center justify-center shrink-0 mt-0.5">
                       <Package className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold uppercase text-orange-700">Origin / Pickup</span>
+                      <span className="text-[10px] font-bold uppercase text-brand-600">Origin / Pickup</span>
                       <h5 className="text-xs font-bold text-slate-900 mt-0.5">{previewOrder.pickupName}</h5>
                       <p className="text-xs text-slate-500 mt-0.5">{previewOrder.pickupAddress}</p>
                       <span className="inline-block mt-1 font-mono text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-700">
@@ -558,7 +521,7 @@ export const LandingPage: React.FC = () => {
                 {/* Right: Milestone Event Timeline */}
                 <div className="p-5 rounded-3xl bg-slate-50/80 border border-slate-200 space-y-4">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                    <Clock className="w-4 h-4 text-orange-600" />
+                    <Clock className="w-4 h-4 text-brand-500" />
                     <span>Real-Time Milestone Log</span>
                   </h4>
 
@@ -566,7 +529,7 @@ export const LandingPage: React.FC = () => {
                     {trackingTimeline.length > 0 ? (
                       trackingTimeline.map((ev, idx) => (
                         <div key={idx} className="flex items-start gap-3 p-3 rounded-2xl bg-white border border-slate-200/70 text-xs">
-                          <div className="w-2 h-2 rounded-full bg-orange-500 mt-1.5 shrink-0" />
+                          <div className="w-2 h-2 rounded-full bg-brand-500 mt-1.5 shrink-0" />
                           <div className="flex-1">
                             <div className="flex items-center justify-between">
                               <strong className="text-slate-900">{ev.newStatus}</strong>
@@ -603,8 +566,13 @@ export const LandingPage: React.FC = () => {
       {/* ─────────────────────────────────────────────────────────────────────────────
           4. SERVICES MULTI-MODAL SLIDER (Inter-City Corridor Delivery)
       ───────────────────────────────────────────────────────────────────────────── */}
-      <section id="services" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto bg-slate-50/60 rounded-[3rem] border border-slate-200/60">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+      <section 
+        id="services" 
+        className="py-16 px-4 sm:px-8 max-w-7xl mx-auto bg-slate-50/60 rounded-[3rem] border border-slate-200/60 overflow-hidden"
+        onMouseEnter={() => setIsSliderPaused(true)}
+        onMouseLeave={() => setIsSliderPaused(false)}
+      >
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
           <div className="space-y-3">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-600 shadow-xs">
               Inter-City Services
@@ -614,62 +582,124 @@ export const LandingPage: React.FC = () => {
             </h2>
           </div>
 
-          {/* Slider Pagination Controls */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setActiveServiceSlide((prev) => (prev === 0 ? services.length - 1 : prev - 1))}
-              className="w-11 h-11 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-slate-900 hover:text-white flex items-center justify-center transition shadow-sm cursor-pointer"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setActiveServiceSlide((prev) => (prev === services.length - 1 ? 0 : prev + 1))}
-              className="w-11 h-11 rounded-full bg-slate-900 text-white hover:bg-orange-600 flex items-center justify-center transition shadow-sm cursor-pointer"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
+          {/* Animated Moving Slider Bar & Controls (Zomato Theme) */}
+          <div className="flex items-center gap-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full border border-slate-200 shadow-xs self-start md:self-auto">
+            {/* Active Step Counter */}
+            <span className="text-xs font-mono font-bold text-brand-600">
+              0{activeServiceSlide + 1}
+            </span>
+
+            {/* Dynamic Moving Slider Bar (Zomato Crimson Red) */}
+            <div className="relative w-28 sm:w-40 h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200/60">
+              <div 
+                className="absolute top-0 bottom-0 left-0 bg-gradient-to-r from-brand-600 via-brand-500 to-rose-500 rounded-full transition-all duration-500 shadow-xs shadow-brand-500/50"
+                style={{ 
+                  width: `${((activeServiceSlide + 1) / services.length) * 100}%` 
+                }}
+              />
+            </div>
+
+            {/* Total Count */}
+            <span className="text-xs font-mono font-bold text-slate-400">
+              0{services.length}
+            </span>
+
+            {/* Slider Navigation Buttons */}
+            <div className="flex items-center gap-1.5 pl-2 border-l border-slate-200">
+              <button
+                type="button"
+                onClick={() => setActiveServiceSlide((prev) => (prev === 0 ? services.length - 1 : prev - 1))}
+                className="w-8 h-8 rounded-full bg-slate-100 text-slate-700 hover:bg-brand-500 hover:text-white flex items-center justify-center transition shadow-2xs cursor-pointer"
+                aria-label="Previous service"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveServiceSlide((prev) => (prev === services.length - 1 ? 0 : prev + 1))}
+                className="w-8 h-8 rounded-full bg-brand-500 text-white hover:bg-brand-600 flex items-center justify-center transition shadow-sm shadow-brand-500/30 cursor-pointer"
+                aria-label="Next service"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Service Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {services.map((srv, idx) => (
-            <div
-              key={idx}
-              className="group rounded-3xl overflow-hidden bg-white border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col"
-            >
-              {/* Image Container */}
-              <div className="relative h-48 overflow-hidden">
-                <img
-                  src={srv.image}
-                  alt={srv.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                />
-                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-bold text-white uppercase tracking-wider">
-                  {srv.tag}
-                </div>
-              </div>
-
-              {/* Body */}
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-orange-600 transition">
-                    {srv.title}
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                    {srv.desc}
-                  </p>
-                </div>
-
-                <Link
-                  to="/register"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-900 group-hover:text-orange-600 transition pt-2 border-t border-slate-100"
+        {/* Dynamic Sliding Cards Track */}
+        <div className="relative overflow-hidden pt-2 pb-4">
+          <div 
+            className="flex transition-transform duration-700 ease-out gap-6"
+            style={{
+              transform: `translateX(-${activeServiceSlide * 100}%)`,
+            }}
+          >
+            {services.map((srv, idx) => {
+              const isActive = idx === activeServiceSlide;
+              return (
+                <div
+                  key={idx}
+                  className={`w-full min-w-full sm:min-w-[calc(50%-12px)] lg:min-w-[calc(33.333%-16px)] xl:min-w-[calc(25%-18px)] rounded-3xl overflow-hidden bg-white border transition-all duration-500 flex flex-col shrink-0 ${
+                    isActive 
+                      ? 'border-brand-500/60 shadow-xl shadow-brand-500/10 ring-2 ring-brand-500/20' 
+                      : 'border-slate-200 shadow-sm hover:shadow-md'
+                  }`}
                 >
-                  <span>Explore Corridor Slabs</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
+                  {/* Image Container */}
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={srv.image}
+                      alt={srv.title}
+                      className="w-full h-full object-cover transition duration-500 hover:scale-105"
+                    />
+                    <div className={`absolute top-3 left-3 px-2.5 py-1 rounded-full backdrop-blur-md text-[10px] font-bold uppercase tracking-wider transition ${
+                      isActive ? 'bg-brand-500 text-white shadow-xs' : 'bg-black/60 text-white'
+                    }`}>
+                      {srv.tag}
+                    </div>
+                  </div>
+
+                  {/* Body */}
+                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div>
+                      <h3 className={`text-lg font-bold transition ${
+                        isActive ? 'text-brand-600' : 'text-slate-900'
+                      }`}>
+                        {srv.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                        {srv.desc}
+                      </p>
+                    </div>
+
+                    <Link
+                      to="/register"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-900 hover:text-brand-600 transition pt-2 border-t border-slate-100"
+                    >
+                      <span>Explore Corridor Slabs</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-brand-500" />
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Interactive Segmented Progress Slider Dots (Clickable) */}
+        <div className="flex items-center justify-center gap-2.5 mt-6">
+          {services.map((_, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => setActiveServiceSlide(idx)}
+              className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                idx === activeServiceSlide
+                  ? 'w-10 bg-brand-500 shadow-sm shadow-brand-500/40'
+                  : 'w-2.5 bg-slate-200 hover:bg-slate-300'
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
           ))}
         </div>
       </section>
@@ -693,12 +723,12 @@ export const LandingPage: React.FC = () => {
           {/* Avatar Cluster */}
           <div className="flex items-center justify-center gap-2 mb-6">
             <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" className="w-9 h-9 rounded-full border-2 border-white shadow-xs object-cover" />
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="Avatar" className="w-12 h-12 rounded-full border-2 border-orange-500 shadow-md object-cover" />
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="Avatar" className="w-12 h-12 rounded-full border-2 border-brand-500 shadow-md object-cover" />
             <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80" alt="Avatar" className="w-9 h-9 rounded-full border-2 border-white shadow-xs object-cover" />
           </div>
 
           <p className="text-base sm:text-xl font-medium text-slate-700 leading-relaxed italic max-w-xl mx-auto">
-            "We count on Gatiman for our daily inter-city shipments and doorstep customer drops. Their real-time GPS telemetry, volumetric rate accuracy, and prompt milestone alerts keep our operations completely seamless."
+            "We count on Ship It for our daily inter-city shipments and doorstep customer drops. Their real-time GPS telemetry, volumetric rate accuracy, and prompt milestone alerts keep our operations completely seamless."
           </p>
 
           <div className="mt-6">
@@ -710,7 +740,7 @@ export const LandingPage: React.FC = () => {
         {/* Partners Logo Ticker */}
         <div className="mt-16 text-center">
           <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-6">
-            Integrated courier networks & enterprise partners
+            Integrated courier networks &amp; enterprise partners
           </p>
           <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 opacity-60 grayscale hover:grayscale-0 transition duration-300">
             <span className="font-black font-heading text-lg sm:text-xl tracking-wider text-slate-800">DELHIVERY</span>
@@ -743,13 +773,13 @@ export const LandingPage: React.FC = () => {
                 key={idx}
                 onClick={() => setActiveFaq(isOpen ? null : idx)}
                 className={`rounded-2xl border transition-all duration-200 cursor-pointer overflow-hidden ${
-                  isOpen ? 'bg-white border-orange-500/40 shadow-md' : 'bg-slate-50/70 border-slate-200/80 hover:bg-white'
+                  isOpen ? 'bg-white border-brand-500/40 shadow-md' : 'bg-slate-50/70 border-slate-200/80 hover:bg-white'
                 }`}
               >
                 <div className="p-5 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center font-mono font-bold text-xs shrink-0 ${
-                      isOpen ? 'bg-orange-600 text-white' : 'bg-slate-200 text-slate-700'
+                      isOpen ? 'bg-brand-500 text-white' : 'bg-slate-200 text-slate-700'
                     }`}>
                       0{idx + 1}
                     </div>
@@ -757,7 +787,7 @@ export const LandingPage: React.FC = () => {
                       {item.q}
                     </h3>
                   </div>
-                  <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180 text-orange-600' : ''}`} />
+                  <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180 text-brand-500' : ''}`} />
                 </div>
 
                 {isOpen && (
@@ -777,12 +807,6 @@ export const LandingPage: React.FC = () => {
       <section className="py-12 px-4 sm:px-8 max-w-7xl mx-auto">
         <div className="relative rounded-[2.5rem] overflow-hidden p-8 sm:p-14 bg-gradient-to-r from-slate-950 via-slate-900 to-black text-white shadow-2xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-8">
           
-          {/* Background image overlay */}
-          <div 
-            className="absolute right-0 inset-y-0 w-full md:w-1/2 bg-cover bg-center opacity-30 pointer-events-none"
-            style={{ backgroundImage: `url('/images/gatiman_hero_container.jpg')` }}
-          />
-
           <div className="relative z-10 space-y-4 max-w-xl">
             <h2 className="text-3xl sm:text-5xl font-heading font-black tracking-tight leading-tight">
               Ready to send your package to another city?
@@ -795,7 +819,7 @@ export const LandingPage: React.FC = () => {
           <div className="relative z-10 flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             <Link
               to="/register/customer"
-              className="px-8 py-4 rounded-full bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-700 hover:to-orange-600 font-bold text-sm text-white transition shadow-lg shadow-orange-900/40 text-center flex items-center justify-center gap-2"
+              className="px-8 py-4 rounded-full bg-gradient-to-r from-brand-600 to-rose-500 hover:from-brand-700 hover:to-brand-600 font-bold text-sm text-white transition shadow-lg shadow-brand-900/40 text-center flex items-center justify-center gap-2"
             >
               <span>Book Inter-City Pickup</span>
               <ArrowRight className="w-4 h-4" />
@@ -813,14 +837,14 @@ export const LandingPage: React.FC = () => {
           <div className="col-span-2 space-y-3">
             <GatimanLogo to="/" />
             <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
-              Next-generation inter-city & urban logistics operating system with real-time GPS telemetry, volumetric rate cards, and automated EV fleet dispatch.
+              Next-generation inter-city &amp; urban logistics operating system with real-time GPS telemetry, volumetric rate cards, and automated EV fleet dispatch.
             </p>
           </div>
 
           <div>
             <h4 className="font-bold text-slate-900 mb-3 uppercase tracking-wider text-[11px]">Company</h4>
             <ul className="space-y-2">
-              <li><a href="#home" className="hover:text-slate-900 transition">About Gatiman</a></li>
+              <li><a href="#home" className="hover:text-slate-900 transition">About Ship It</a></li>
               <li><a href="#services" className="hover:text-slate-900 transition">Inter-City Network</a></li>
               <li><a href="#faq" className="hover:text-slate-900 transition">Fleet Hubs</a></li>
               <li><Link to="/login" className="hover:text-slate-900 transition">Contact Operations</Link></li>
@@ -838,10 +862,10 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div>
-            <h4 className="font-bold text-slate-900 mb-3 uppercase tracking-wider text-[11px]">Tracking & Portals</h4>
+            <h4 className="font-bold text-slate-900 mb-3 uppercase tracking-wider text-[11px]">Tracking &amp; Portals</h4>
             <ul className="space-y-2">
               <li><a href="#tracking" className="hover:text-slate-900 transition">Live Parcel Radar</a></li>
-              <li><a href="#faq" className="hover:text-slate-900 transition">Help Center & FAQ</a></li>
+              <li><a href="#faq" className="hover:text-slate-900 transition">Help Center &amp; FAQ</a></li>
               <li><Link to="/login" className="hover:text-slate-900 transition">Driver Portal</Link></li>
               <li><Link to="/login" className="hover:text-slate-900 transition">Admin Console</Link></li>
             </ul>
@@ -849,7 +873,7 @@ export const LandingPage: React.FC = () => {
         </div>
 
         <div className="pt-8 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]">
-          <p>© 2026 GATIMAN Logistics Platform. All Rights Reserved.</p>
+          <p>© 2026 Ship It Logistics Platform. All Rights Reserved.</p>
           <div className="flex items-center gap-6">
             <a href="#home" className="hover:text-slate-900 transition">Terms of Service</a>
             <a href="#home" className="hover:text-slate-900 transition">Privacy Policy</a>
@@ -857,34 +881,6 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
       </footer>
-
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          9. VIDEO PREVIEW MODAL
-      ───────────────────────────────────────────────────────────────────────────── */}
-      {isVideoModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="relative w-full max-w-4xl bg-slate-900 rounded-3xl overflow-hidden border border-slate-700 shadow-2xl">
-            <div className="flex items-center justify-between p-4 border-b border-slate-800">
-              <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-orange-500 animate-pulse" />
-                <span className="text-xs font-bold text-white uppercase tracking-wider">
-                  GATIMAN Inter-City Operations Reel · Delhi NCR
-                </span>
-              </div>
-              <button
-                onClick={() => setIsVideoModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-4">
-              <DeliveryVideoPlayer />
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );

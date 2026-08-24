@@ -21,7 +21,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error caught by GATIMAN ErrorBoundary:', error, errorInfo);
+    console.error('Uncaught error caught by Ship It ErrorBoundary:', error, errorInfo);
   }
 
   private handleReload = () => {

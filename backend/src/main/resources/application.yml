@@ -25,12 +25,14 @@ spring:
   
   jpa:
     open-in-view: false
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
     show-sql: false
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
 
   sql:
     init:
@@ -66,7 +68,7 @@ app:
   email:
     enabled: ${EMAIL_ENABLED:true}
     from: ${EMAIL_FROM:${RESEND_FROM_EMAIL:onboarding@resend.dev}}
-    from-name: ${EMAIL_FROM_NAME:GATIMAN Logistics}
+    from-name: ${EMAIL_FROM_NAME:Ship It Logistics}
     base-url: ${APP_BASE_URL:https://frontend-ten-lyart-76.vercel.app}
     proximity-threshold-km: ${EMAIL_PROXIMITY_THRESHOLD_KM:0.5}
     delay-cooldown-minutes: ${EMAIL_DELAY_COOLDOWN_MINUTES:30}
@@ -75,7 +77,7 @@ razorpay:
   key-id: ${RAZORPAY_KEY_ID:rzp_test_gatiman123}
   key-secret: ${RAZORPAY_KEY_SECRET:gatimanSecretKey123}
   currency: INR
-  company-name: GATIMAN Logistics Inc.
+  company-name: Ship It Logistics Inc.
 
 management:
   endpoints:

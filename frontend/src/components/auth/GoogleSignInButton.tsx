@@ -39,8 +39,8 @@ export const GoogleSignInButton: React.FC<Props> = ({
       const initGsi = () => {
         if ((window as any).google?.accounts) {
           try {
-            if (!(window as any).__gatiman_gsi_initialized) {
-              (window as any).__gatiman_gsi_initialized = true;
+            if (!(window as any).__shipit_gsi_initialized) {
+              (window as any).__shipit_gsi_initialized = true;
               (window as any).google.accounts.id.initialize({
                 client_id: googleClientId,
                 callback: handleGoogleCredentialResponse,

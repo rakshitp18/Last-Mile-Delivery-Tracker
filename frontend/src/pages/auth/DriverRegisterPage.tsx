@@ -55,7 +55,7 @@ export const DriverRegisterPage: React.FC = () => {
           <span>Delivery Fleet Partner Onboarding</span>
         </div>
         <h1 className="text-2xl font-black font-heading tracking-tight text-slate-900 sm:text-3xl">
-          Drive & Earn with GATIMAN
+          Drive &amp; Earn with Ship It
         </h1>
         <p className="mt-1.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
           Register your vehicle, select your delivery zone city, and start earning on every completed parcel dispatch.
@@ -104,7 +104,7 @@ export const DriverRegisterPage: React.FC = () => {
               <input
                 type="email"
                 {...register('email')}
-                placeholder="driver@example.com"
+                placeholder="driver@gmail.com"
                 className="w-full rounded-xl border border-slate-300 py-2.5 pl-10 pr-3.5 text-sm text-slate-900 shadow-xs focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
               />
             </div>

@@ -492,8 +492,8 @@ export const AdminSettingsPage: React.FC = () => {
                   Active
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 font-mono truncate">
-                376704457217-hp4a0...apps.googleusercontent.com
+              <p className="text-[11px] text-slate-500 font-mono truncate" title={import.meta.env.VITE_GOOGLE_CLIENT_ID || '631552883561-r8m66tevmlmtn07ice0g4oq7jidflcov.apps.googleusercontent.com'}>
+                {import.meta.env.VITE_GOOGLE_CLIENT_ID || '631552883561-r8m66tevmlmtn07ice0g4oq7jidflcov.apps.googleusercontent.com'}
               </p>
             </div>
 

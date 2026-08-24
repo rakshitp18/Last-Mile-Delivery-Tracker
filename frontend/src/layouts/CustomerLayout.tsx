@@ -51,7 +51,7 @@ export const CustomerLayout: React.FC = () => {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
               <GatimanLogo to="/customer/dashboard" />
-              <span className="hidden rounded-full bg-orange-50 border border-orange-200 px-2 py-0.5 text-[10px] font-bold text-orange-700 sm:inline-block">
+              <span className="hidden rounded-full bg-brand-50 border border-brand-200 px-2 py-0.5 text-[10px] font-bold text-brand-700 sm:inline-block">
                 Customer Portal
               </span>
             </div>
@@ -67,11 +67,11 @@ export const CustomerLayout: React.FC = () => {
                     to={item.href}
                     className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
                       active
-                        ? 'bg-orange-50 text-orange-700 font-bold border border-orange-200/80 shadow-2xs'
+                        ? 'bg-brand-50 text-brand-700 font-bold border border-brand-200/80 shadow-2xs'
                         : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
                     }`}
                   >
-                    <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-orange-600' : 'text-slate-400'}`} />
+                    <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-brand-600' : 'text-slate-400'}`} />
                     <span>{item.name}</span>
                   </Link>
                 );
@@ -85,22 +85,22 @@ export const CustomerLayout: React.FC = () => {
             <button
               type="button"
               onClick={handleRefresh}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200 transition shadow-2xs cursor-pointer shrink-0"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-brand-50 hover:text-brand-600 hover:border-brand-200 transition shadow-2xs cursor-pointer shrink-0"
               title="Refresh page data"
               aria-label="Refresh"
             >
-              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin text-orange-600' : ''}`} />
+              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin text-brand-600' : ''}`} />
             </button>
 
             <NotificationBell />
 
             <div className="hidden sm:flex items-center gap-2.5 border-l border-slate-200 pl-3">
               <Link to="/customer/profile" className="flex items-center gap-2.5 group">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-orange-600 to-amber-500 text-xs font-black text-white shadow-xs group-hover:ring-2 ring-orange-400/30 transition shrink-0">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-brand-600 to-rose-500 text-xs font-black text-white shadow-xs group-hover:ring-2 ring-brand-400/30 transition shrink-0">
                   {user?.firstName ? user.firstName.charAt(0).toUpperCase() : 'C'}
                 </div>
                 <div className="text-left hidden md:block max-w-[130px]">
-                  <p className="truncate text-xs font-bold text-slate-800 group-hover:text-orange-600 transition leading-tight">
+                  <p className="truncate text-xs font-bold text-slate-800 group-hover:text-brand-600 transition leading-tight">
                     {user?.firstName} {user?.lastName}
                   </p>
                   <p className="truncate text-[10px] text-slate-400 font-medium leading-tight">{user?.email}</p>
@@ -108,8 +108,8 @@ export const CustomerLayout: React.FC = () => {
               </Link>
               <button
                 onClick={handleLogout}
-                className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition cursor-pointer"
-                title="Log out"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200 transition cursor-pointer"
+                title="Sign Out"
               >
                 <LogOut className="h-4 w-4" />
               </button>
@@ -119,14 +119,15 @@ export const CustomerLayout: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 lg:hidden hover:bg-slate-100"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 lg:hidden"
+              aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile dropdown nav */}
+        {/* Mobile menu dropdown */}
         {isMobileMenuOpen && (
           <div className="border-t border-slate-200 bg-white px-4 py-3 space-y-1 lg:hidden">
             {navigation.map((item) => {
@@ -139,11 +140,11 @@ export const CustomerLayout: React.FC = () => {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition ${
                     active
-                      ? 'bg-orange-50 text-orange-700 font-bold border border-orange-200/80'
+                      ? 'bg-brand-50 text-brand-700 font-bold border border-brand-200/80'
                       : 'text-slate-600 hover:bg-slate-50'
                   }`}
                 >
-                  <Icon className={`h-4 w-4 ${active ? 'text-orange-600' : 'text-slate-400'}`} />
+                  <Icon className={`h-4 w-4 ${active ? 'text-brand-600' : 'text-slate-400'}`} />
                   <span>{item.name}</span>
                 </Link>
               );
@@ -155,7 +156,7 @@ export const CustomerLayout: React.FC = () => {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="flex items-center gap-2.5"
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-orange-600 to-amber-500 text-xs font-bold text-white">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-brand-600 to-rose-500 text-xs font-bold text-white">
                   {user?.firstName ? user.firstName.charAt(0).toUpperCase() : 'C'}
                 </div>
                 <div>
@@ -190,7 +191,7 @@ export const CustomerLayout: React.FC = () => {
                 key={item.name}
                 to={item.href}
                 className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition ${
-                  active ? 'text-orange-600 font-bold' : 'text-slate-400 hover:text-slate-600'
+                  active ? 'text-brand-600 font-bold' : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 <Icon className="h-5 w-5" />

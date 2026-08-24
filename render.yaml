@@ -60,6 +60,6 @@ services:
       - key: VITE_WS_URL
         value: https://gatiman-backend.onrender.com/ws
       - key: VITE_GOOGLE_CLIENT_ID
-        value: 376704457217-hp4a0a55ot728nh2kk33pj6vp9projpl.apps.googleusercontent.com
+        value: 631552883561-r8m66tevmlmtn07ice0g4oq7jidflcov.apps.googleusercontent.com
       - key: VITE_RAZORPAY_KEY_ID
         value: rzp_test_TTNaA35CVbi6kG

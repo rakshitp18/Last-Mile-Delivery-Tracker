@@ -66,12 +66,12 @@ export const GatimanLogo: React.FC<GatimanLogoProps> = ({
 }) => {
   const content = (
     <div className={`flex items-center gap-2.5 group select-none ${className}`}>
-      <div className={`${badgeSize} rounded-full bg-gradient-to-tr from-orange-600 to-amber-500 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform duration-200 shrink-0`}>
+      <div className={`${badgeSize} rounded-full bg-gradient-to-tr from-brand-600 to-brand-500 flex items-center justify-center text-white shadow-md shadow-brand-500/20 group-hover:scale-105 transition-transform duration-200 shrink-0`}>
         <FastDeliveryScooterIcon className={iconSize} />
       </div>
       {showText && (
-        <span className={`font-heading font-black ${textSize} tracking-tight ${textColor} group-hover:text-orange-500 transition-colors`}>
-          gatiman<span className="text-orange-500">.</span>
+        <span className={`font-heading font-black ${textSize} tracking-tight ${textColor} group-hover:text-brand-500 transition-colors`}>
+          Ship It<span className="text-brand-500">.</span>
         </span>
       )}
     </div>

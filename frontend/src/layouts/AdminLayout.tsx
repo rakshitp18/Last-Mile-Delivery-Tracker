@@ -94,7 +94,7 @@ export const AdminLayout: React.FC = () => {
         <div className="flex h-16 items-center justify-between border-b border-slate-200 px-6">
           <div className="flex items-center gap-2">
             <GatimanLogo to="/admin/dashboard" />
-            <span className="rounded-full bg-orange-50 border border-orange-200 px-2 py-0.5 text-[9px] font-bold text-orange-700 uppercase tracking-wider">
+            <span className="rounded-full bg-brand-50 border border-brand-200 px-2 py-0.5 text-[9px] font-bold text-brand-700 uppercase tracking-wider">
               OPS HQ
             </span>
           </div>
@@ -124,11 +124,11 @@ export const AdminLayout: React.FC = () => {
                       onClick={() => setSidebarOpen(false)}
                       className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition ${
                         isActive
-                          ? 'bg-orange-50 font-bold text-orange-700 border border-orange-200/80 shadow-2xs'
+                          ? 'bg-brand-50 font-bold text-brand-700 border border-brand-200/80 shadow-2xs'
                           : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                       }`}
                     >
-                      <Icon className={`h-4 w-4 ${isActive ? 'text-orange-600' : 'text-slate-400'}`} />
+                      <Icon className={`h-4 w-4 ${isActive ? 'text-brand-600' : 'text-slate-400'}`} />
                       <span>{item.name}</span>
                     </Link>
                   );
@@ -142,11 +142,11 @@ export const AdminLayout: React.FC = () => {
         <div className="border-t border-slate-200 p-4 bg-slate-50/50">
           <div className="flex items-center justify-between">
             <Link to="/admin/profile" className="flex items-center gap-3 overflow-hidden group">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-orange-600 to-amber-500 font-bold text-white shadow-xs group-hover:ring-2 ring-orange-500/30 transition text-sm">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-brand-600 to-rose-500 font-bold text-white shadow-xs group-hover:ring-2 ring-brand-500/30 transition text-sm">
                 {user?.firstName?.charAt(0) || 'A'}
               </div>
               <div className="overflow-hidden">
-                <p className="truncate text-xs font-bold text-slate-800 group-hover:text-orange-600 transition">
+                <p className="truncate text-xs font-bold text-slate-800 group-hover:text-brand-600 transition">
                   {user?.firstName} {user?.lastName}
                 </p>
                 <p className="truncate text-[11px] text-slate-500">{user?.email}</p>
@@ -176,7 +176,7 @@ export const AdminLayout: React.FC = () => {
             </button>
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="text-xs font-semibold text-slate-700">GATIMAN Inter-City Dispatch Active</span>
+              <span className="text-xs font-semibold text-slate-700">Ship It Inter-City Dispatch Active</span>
             </div>
           </div>
 
@@ -185,11 +185,11 @@ export const AdminLayout: React.FC = () => {
             <button
               type="button"
               onClick={handleRefresh}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200 transition shadow-2xs cursor-pointer shrink-0"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-brand-50 hover:text-brand-600 hover:border-brand-200 transition shadow-2xs cursor-pointer shrink-0"
               title="Refresh live data"
               aria-label="Refresh"
             >
-              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin text-orange-600' : ''}`} />
+              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin text-brand-600' : ''}`} />
             </button>
 
             <NotificationBell />

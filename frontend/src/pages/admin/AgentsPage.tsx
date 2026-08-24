@@ -246,7 +246,7 @@ export const AdminAgentsPage: React.FC = () => {
                     <div>
                       <h3 className="font-bold text-slate-900 text-sm tracking-tight">{agent.name}</h3>
                       <p className="text-[11px] text-slate-500 font-mono lowercase">
-                        {agent.email ? agent.email.toLowerCase() : 'agent@gatiman.in'}
+                        {agent.email ? agent.email.toLowerCase() : 'agent@shipit.in'}
                       </p>
                     </div>
                   </div>
@@ -364,7 +364,7 @@ export const AdminAgentsPage: React.FC = () => {
                           <div>
                             <div className="font-bold text-slate-900">{agent.name}</div>
                             <div className="text-slate-500 font-mono text-[11px] lowercase">
-                              {agent.email ? agent.email.toLowerCase() : 'agent@gatiman.in'}
+                              {agent.email ? agent.email.toLowerCase() : 'agent@shipit.in'}
                             </div>
                           </div>
                         </div>

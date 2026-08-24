@@ -161,7 +161,7 @@ export const RegisterPage: React.FC = () => {
               <input
                 type="email"
                 {...register('email')}
-                placeholder="rahul@example.com"
+                placeholder="rahul@gmail.com"
                 className="w-full rounded-xl border border-slate-300 py-2.5 pl-10 pr-3.5 text-sm text-slate-900 shadow-xs focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
               />
             </div>

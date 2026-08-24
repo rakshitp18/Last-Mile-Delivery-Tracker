@@ -674,11 +674,11 @@ export const EmailMonitoringPage: React.FC = () => {
             {/* Email Header Metadata Bar */}
             <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-600 space-y-1 font-mono text-[11px]">
               <div className="flex justify-between">
-                <span>From: <strong className="text-slate-800">GATIMAN Operations &lt;notifications@gatiman.in&gt;</strong></span>
+                <span>From: <strong className="text-slate-800">Ship It Operations &lt;notifications@shipit.in&gt;</strong></span>
                 <span className="text-slate-400">Order #GTM-20260820-875171</span>
               </div>
               <div className="text-slate-700 font-sans font-semibold text-xs truncate">
-                Subject: <span className="text-orange-700 font-bold">{EVENT_TYPE_CONFIG[galleryEventType]?.label} — GATIMAN Delivery Update</span>
+                Subject: <span className="text-orange-700 font-bold">{EVENT_TYPE_CONFIG[galleryEventType]?.label} — Ship It Delivery Update</span>
               </div>
             </div>
 
