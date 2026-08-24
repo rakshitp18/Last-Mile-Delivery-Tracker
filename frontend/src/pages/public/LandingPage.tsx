@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { orderApi } from '../../api/orderApi';
 import { trackingApi, LiveTrackingData } from '../../api/trackingApi';
 import { Order, TrackingEvent, OrderStatus } from '../../types';
-import { GatimanLogo } from '../../components/common/GatimanLogo';
+import { GatimanLogo, ScooterIcon } from '../../components/common/GatimanLogo';
 import { ConveyorHero3D } from '../../components/common/ConveyorHero3D';
 import {
   Truck, Search, ArrowRight, Star, Users, Building2,
   Radio, ChevronLeft, ChevronRight, AlertCircle, X,
-  ChevronDown, Navigation, CheckCircle2, UserCheck, RefreshCw, Shield, MapPin, Clock, Phone, Package, ShieldCheck, User
+  ChevronDown, Navigation, CheckCircle2, UserCheck, RefreshCw,
+  Shield, MapPin, Clock, Phone, Package, ShieldCheck, User,
+  Zap, Calculator, ArrowUpRight, Gauge, Cpu, Route, Sparkles,
+  ExternalLink, Layers, Check, HelpCircle
 } from 'lucide-react';
 
 const deliverySteps: { status: OrderStatus; label: string; icon: React.ElementType }[] = [
@@ -36,23 +39,43 @@ export const LandingPage: React.FC = () => {
   const [previewLiveTracking, setPreviewLiveTracking] = useState<LiveTrackingData | null>(null);
   const [trackingTimeline, setTrackingTimeline] = useState<TrackingEvent[]>([]);
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
-  const [activeServiceSlide, setActiveServiceSlide] = useState(0);
-  const [isSliderPaused, setIsSliderPaused] = useState(false);
+  const [activeServiceTab, setActiveServiceTab] = useState(0);
 
-  // Auto-advance services slider
-  useEffect(() => {
-    if (isSliderPaused) return;
-    const interval = setInterval(() => {
-      setActiveServiceSlide((prev) => (prev + 1) % 4);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [isSliderPaused]);
+  // Volumetric Rate Calculator interactive state
+  const [calcLength, setCalcLength] = useState<number>(30);
+  const [calcBreadth, setCalcBreadth] = useState<number>(20);
+  const [calcHeight, setCalcHeight] = useState<number>(15);
+  const [calcActualWeight, setCalcActualWeight] = useState<number>(1.5);
+  const [calcRouteType, setCalcRouteType] = useState<'INTRA_ZONE' | 'INTER_ZONE'>('INTRA_ZONE');
+
+  // Computed rate calculation
+  const calculatedEstimates = useMemo(() => {
+    const volumetricWeight = (calcLength * calcBreadth * calcHeight) / 5000;
+    const billableWeight = Math.max(calcActualWeight, volumetricWeight);
+    const roundedBillable = Math.round(billableWeight * 100) / 100;
+    
+    // Base slab formula (Standard B2C)
+    const baseAllowance = 2.0;
+    const baseRate = calcRouteType === 'INTRA_ZONE' ? 60 : 120;
+    const ratePerKg = calcRouteType === 'INTRA_ZONE' ? 25 : 45;
+    
+    const extraWeight = Math.max(0, roundedBillable - baseAllowance);
+    const estimatedCharge = Math.round(baseRate + (extraWeight * ratePerKg));
+    const estimatedHours = calcRouteType === 'INTRA_ZONE' ? '2 - 4 Hours' : 'Same-Day / Next-Day';
+
+    return {
+      volumetricWeight: Math.round(volumetricWeight * 100) / 100,
+      billableWeight: roundedBillable,
+      charge: estimatedCharge,
+      transitTime: estimatedHours,
+    };
+  }, [calcLength, calcBreadth, calcHeight, calcActualWeight, calcRouteType]);
 
   const handleQuickTrackSubmit = async (e?: React.FormEvent, customId?: string) => {
     if (e) e.preventDefault();
     const cleanId = (customId || trackingInput).trim();
     if (!cleanId) {
-      setSearchError('Please enter a valid tracking number (e.g. GTM-20260824-196623)');
+      setSearchError('Please enter a valid tracking number (e.g. GTM-20260820-875171)');
       return;
     }
     setIsSearching(true);
@@ -75,7 +98,7 @@ export const LandingPage: React.FC = () => {
         const live = await trackingApi.getLiveTracking(order.id);
         setPreviewLiveTracking(live);
       } catch {
-        // Build accurate fallback telemetry using order details
+        // Fallback telemetry simulation
         setPreviewLiveTracking({
           orderId: order.id,
           trackingNumber: order.trackingNumber,
@@ -134,151 +157,166 @@ export const LandingPage: React.FC = () => {
 
   const services = [
     {
-      title: 'Same-Day Inter-City Express',
-      tag: 'Corridor Transit',
+      title: 'Same-Day Inter-City Corridor Express',
+      tag: 'Express Corridor',
       image: '/images/service_intercity_express.jpg',
-      desc: 'Scheduled direct hub transit connecting Delhi NCR, Jaipur, Chandigarh, and Agra within hours.',
+      desc: 'Scheduled direct hub transit connecting Delhi NCR, Jaipur, Chandigarh, Lucknow, and Agra within guaranteed SLA windows.',
+      sla: 'Under 6 Hours',
+      type: 'Direct Van / Highway Linehaul',
+      badgeColor: 'bg-orange-50 text-brand-600 border-brand-200',
     },
     {
-      title: 'Doorstep Hyperlocal Dispatch',
-      tag: 'On-Demand Pickup',
+      title: 'Hyperlocal Doorstep On-Demand',
+      tag: 'Urban Hyperlocal',
       image: '/images/service_doorstep_hyperlocal.jpg',
-      desc: 'Instant doorstep collection and same-day city delivery for personal and business parcels.',
+      desc: 'Point-to-point doorstep collection and rapid city delivery for parcels, documents, and retail orders with instant driver pairing.',
+      sla: '30 - 90 Minutes',
+      type: 'EV Scooter / Bike Fleet',
+      badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     },
     {
-      title: 'Heavy Cargo & Bulk Freight',
-      tag: 'Volumetric B2B',
+      title: 'Heavy Cargo & Bulk B2B Freight',
+      tag: 'Volumetric Freight',
       image: '/images/service_heavy_freight.jpg',
-      desc: 'Full truckload and volumetric multi-carton commercial shipping with transparent weight slabs.',
+      desc: 'Dedicated commercial trucks for warehouse replenishment, multi-box inventory, and bulk industrial cargo with volumetric discounts.',
+      sla: 'Same-Day / Next-Day',
+      type: 'Tempo & 14ft Commercial Truck',
+      badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
     },
     {
-      title: 'EV Urban Fleet Delivery',
-      tag: 'Zero-Emission Last Mile',
+      title: 'Eco-Friendly Clean Fleet EV Network',
+      tag: 'Zero Emissions',
       image: '/images/service_ev_scooter_fleet.jpg',
-      desc: 'Eco-friendly electric scooters and delivery vans for fast, green last-mile urban dispatch.',
+      desc: '100% electrified last-mile delivery fleet with smart battery swapping hubs minimizing carbon footprint across urban clusters.',
+      sla: 'Instant City Dispatch',
+      type: 'High-Torque Cargo EV Scooters',
+      badgeColor: 'bg-teal-50 text-teal-700 border-teal-200',
     },
   ];
 
   const faqs = [
     {
-      q: 'Which cities and corridors do you cover for inter-city delivery?',
-      a: 'Ship It connects all major hubs across Delhi NCR (Delhi, Noida, Gurugram, Ghaziabad, Faridabad) and high-speed inter-city corridors including Jaipur, Chandigarh, Lucknow, Agra, and Ludhiana.',
+      q: 'How is the volumetric billable weight calculated?',
+      a: 'We use the global air and express cargo formula: (Length × Breadth × Height in cm) / 5000. Your billable weight is automatically computed as the maximum of actual dead weight and volumetric dimensional weight, ensuring 100% transparent and deterministic billing.',
     },
     {
-      q: 'How quickly are inter-city consignments picked up and delivered?',
-      a: 'Doorstep pickups occur within 60 minutes of booking. Express corridor shipments reach destination hubs within 12 to 24 hours with continuous live GPS tracking.',
+      q: 'How does proximity driver auto-assignment work?',
+      a: 'Our dispatch engine combines Haversine GPS geo-distance, driver real-time workload quotas (< Max Capacity), and cluster zone matching to automatically pair shipments with the closest qualified driver within seconds of booking.',
     },
     {
-      q: 'How do I track my package in real time?',
-      a: 'Simply enter your tracking number (e.g. GTM-20260824-196623) in our Live Radar to view live vehicle GPS coordinates, driver contact details, and sub-second ETA countdowns.',
+      q: 'What happens if a delivery attempt fails?',
+      a: 'If recipient is unreachable or unavailable, the delivery agent logs the reason. The recipient instantly receives an OTP-secured link to reschedule delivery to their preferred date and time slot without contacting support.',
     },
     {
-      q: 'How is volumetric weight calculated for parcel pricing?',
-      a: 'Volumetric weight is computed as (Length × Width × Height in cm) / 5000. Your billable amount is automatically determined by whichever is higher between actual dead weight and volumetric weight.',
+      q: 'Which cities and corridors are currently covered?',
+      a: 'Ship It covers the complete Delhi NCR metropolitan cluster (Delhi, Noida, Gurugram, Ghaziabad, Faridabad) along with high-speed inter-city corridors linking Jaipur, Chandigarh, Lucknow, and Agra.',
+    },
+    {
+      q: 'Can I test demo accounts without registration?',
+      a: 'Yes! The login screen provides 1-click Quick Demo buttons for Customer, Delivery Driver, and Operations Admin portals pre-loaded with live mock orders, real-time telemetry, and rate card rules.',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-[#FCFCFC] text-slate-900 font-sans selection:bg-brand-500 selection:text-white">
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-brand-500 selection:text-white antialiased">
       
       {/* ─────────────────────────────────────────────────────────────────────────────
-          1. FLOATING NAVIGATION BAR (Glass Capsule with Track Live Radar)
+          1. FLOATING GLASSPHORPHISM NAVIGATION BAR
       ───────────────────────────────────────────────────────────────────────────── */}
-      <header className="fixed top-4 inset-x-0 z-50 px-4 sm:px-8 max-w-7xl mx-auto pointer-events-none">
+      <header className="fixed top-3 inset-x-0 z-50 px-4 sm:px-8 max-w-7xl mx-auto pointer-events-none">
         <div className="flex items-center justify-between gap-3 pointer-events-auto">
           
-          {/* Logo with Scooter Icon */}
-          <div className="bg-white/95 backdrop-blur-md px-4 py-2 rounded-full border border-slate-200/80 shadow-xs transition hover:shadow-md">
-            <GatimanLogo to="/" />
+          {/* Logo Capsule */}
+          <div className="bg-slate-900/90 backdrop-blur-xl px-4 py-2 rounded-full border border-slate-800 shadow-xl transition hover:border-brand-500/50">
+            <GatimanLogo to="/" textColor="text-white" />
           </div>
 
-          {/* Center Navigation Capsule with Prominent Track Live Radar */}
-          <nav className="hidden md:flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-200/80 shadow-xs text-xs font-semibold text-slate-600">
-            <a href="#home" className="px-4 py-2 rounded-full bg-slate-900 text-white font-bold transition shadow-xs">
+          {/* Center Navigation Links Capsule */}
+          <nav className="hidden lg:flex items-center gap-1 bg-slate-900/90 backdrop-blur-xl px-3 py-1.5 rounded-full border border-slate-800 shadow-xl text-xs font-semibold text-slate-300">
+            <a href="#home" className="px-3.5 py-1.5 rounded-full bg-slate-800 text-white font-bold transition shadow-xs">
               Home
             </a>
-            <a href="#services" className="px-3.5 py-2 rounded-full hover:text-brand-500 transition flex items-center gap-1">
-              Services <ChevronDown className="w-3 h-3 text-slate-400" />
+            <a href="#tracking" className="px-3.5 py-1.5 rounded-full text-brand-400 hover:bg-brand-500/10 transition flex items-center gap-1.5">
+              <Radio className="w-3 h-3 animate-pulse text-brand-500" />
+              <span>Live Radar</span>
             </a>
-            
-            {/* Prominent Track Live Radar Nav Button (Zomato Style) */}
-            <a
-              href="#tracking"
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById('tracking')?.scrollIntoView({ behavior: 'smooth' });
-                const input = document.getElementById('tracking-radar-input') as HTMLInputElement | null;
-                if (input) input.focus();
-              }}
-              className="px-3.5 py-1.5 rounded-full font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 border border-brand-200 transition flex items-center gap-1.5 shadow-xs"
-            >
-              <Radio className="w-3.5 h-3.5 text-brand-500 animate-pulse" />
-              <span>Track Live Radar</span>
+            <a href="#calculator" className="px-3.5 py-1.5 rounded-full hover:text-white hover:bg-slate-800/60 transition flex items-center gap-1">
+              <Calculator className="w-3 h-3 text-slate-400" />
+              <span>Rate Calculator</span>
             </a>
-
-            <a href="#faq" className="px-3.5 py-2 rounded-full hover:text-brand-500 transition">
+            <a href="#services" className="px-3.5 py-1.5 rounded-full hover:text-white hover:bg-slate-800/60 transition">
+              Fleet &amp; Services
+            </a>
+            <a href="#features" className="px-3.5 py-1.5 rounded-full hover:text-white hover:bg-slate-800/60 transition">
+              Architecture
+            </a>
+            <a href="#faq" className="px-3.5 py-1.5 rounded-full hover:text-white hover:bg-slate-800/60 transition">
               FAQ
             </a>
           </nav>
 
-          {/* Right Action Button: Login */}
+          {/* Right Action Area */}
           <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md border border-slate-800 text-[11px] font-mono text-emerald-400">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <span>Hubs Online</span>
+            </div>
+
             <Link
               to="/login"
-              className="inline-flex items-center justify-center px-5 py-2.5 rounded-full text-xs font-bold text-slate-800 bg-white/90 backdrop-blur-md border border-slate-200/90 hover:bg-slate-900 hover:text-white transition shadow-sm"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 border border-brand-400/30 transition shadow-lg shadow-brand-600/30 hover:scale-105 active:scale-95"
             >
-              <span>Login</span>
+              <span>Portal Login</span>
+              <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
             </Link>
           </div>
         </div>
       </header>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          FLOATING RIGHT-SIDE ACTION DOCK (Truck & Customer Hub)
+          FLOATING RIGHT-SIDE QUICK PERSONA ONBOARDING DOCK
       ───────────────────────────────────────────────────────────────────────────── */}
       <aside className="fixed right-3 sm:right-5 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3 pointer-events-auto">
-        <div className="flex flex-col gap-2.5 p-2 bg-white/90 backdrop-blur-2xl rounded-full border border-slate-200/90 shadow-2xl shadow-slate-900/15">
+        <div className="flex flex-col gap-2.5 p-2 bg-slate-900/90 backdrop-blur-2xl rounded-full border border-slate-800 shadow-2xl shadow-black/50">
           
-          {/* 1. Driver Button (Truck Icon) */}
+          {/* Driver Quick Button */}
           <div className="relative group flex items-center justify-center">
             <Link
               to="/register/driver"
-              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center shadow-md shadow-emerald-600/30 hover:scale-110 active:scale-95 transition-all duration-200"
-              aria-label="Sign in as Driver"
+              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20 hover:scale-110 active:scale-95 transition-all duration-200"
+              aria-label="Drive & Earn with Ship It"
             >
               <Truck className="w-5 h-5" />
             </Link>
 
-            {/* Premium Left-Sliding Glass Tooltip */}
             <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center pointer-events-none animate-in fade-in slide-in-from-right-3 duration-200">
-              <div className="bg-slate-950/95 backdrop-blur-md text-white text-xs px-3.5 py-2 rounded-2xl border border-slate-800 shadow-2xl whitespace-nowrap flex flex-col">
+              <div className="bg-slate-900 text-white text-xs px-3.5 py-2 rounded-2xl border border-slate-700 shadow-2xl whitespace-nowrap flex flex-col">
                 <span className="font-bold text-white flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>Sign in as Driver</span>
+                  <span>Join Fleet as Driver</span>
                 </span>
-                <span className="text-[10px] text-emerald-400 font-medium mt-0.5">New Driver Onboarding ➔</span>
+                <span className="text-[10px] text-emerald-400 font-medium mt-0.5">High-Earning Run Sheets ➔</span>
               </div>
             </div>
           </div>
 
-          {/* 2. Customer Button (Person / User Icon) */}
+          {/* Customer Quick Button */}
           <div className="relative group flex items-center justify-center">
             <Link
               to="/register/customer"
-              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-brand-600 to-rose-500 text-white flex items-center justify-center shadow-md shadow-brand-600/30 hover:scale-110 active:scale-95 transition-all duration-200"
-              aria-label="Sign in as Customer"
+              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-brand-600 to-rose-500 text-white flex items-center justify-center shadow-lg shadow-brand-500/20 hover:scale-110 active:scale-95 transition-all duration-200"
+              aria-label="Send Parcels with Ship It"
             >
               <User className="w-5 h-5" />
             </Link>
 
-            {/* Premium Left-Sliding Glass Tooltip */}
             <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center pointer-events-none animate-in fade-in slide-in-from-right-3 duration-200">
-              <div className="bg-slate-950/95 backdrop-blur-md text-white text-xs px-3.5 py-2 rounded-2xl border border-slate-800 shadow-2xl whitespace-nowrap flex flex-col">
+              <div className="bg-slate-900 text-white text-xs px-3.5 py-2 rounded-2xl border border-slate-700 shadow-2xl whitespace-nowrap flex flex-col">
                 <span className="font-bold text-white flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
-                  <span>Sign in as Customer</span>
+                  <span>Register as Customer</span>
                 </span>
-                <span className="text-[10px] text-brand-400 font-medium mt-0.5">New Customer Portal ➔</span>
+                <span className="text-[10px] text-brand-400 font-medium mt-0.5">Instant Parcel Dispatch ➔</span>
               </div>
             </div>
           </div>
@@ -287,68 +325,118 @@ export const LandingPage: React.FC = () => {
       </aside>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          2. HERO SECTION WITH ANIMATED LOGISTICS CONVEYOR BELT BACKGROUND
+          2. HERO SECTION WITH EMBEDDED 3D CONVEYOR BACKGROUND
       ───────────────────────────────────────────────────────────────────────────── */}
-      <section id="home" className="relative pt-24 pb-12 px-4 sm:px-8 max-w-7xl mx-auto">
-        <div className="relative rounded-[2.5rem] overflow-hidden min-h-[580px] sm:min-h-[640px] flex flex-col justify-end p-6 sm:p-12 shadow-2xl border border-slate-200">
+      <section id="home" className="relative pt-24 pb-16 px-4 sm:px-8 max-w-7xl mx-auto">
+        <div className="relative rounded-[2.5rem] overflow-hidden min-h-[620px] sm:min-h-[680px] flex flex-col justify-end p-6 sm:p-12 shadow-2xl border border-slate-800 bg-slate-900/40">
           
-          {/* Photorealistic 3D WebGL Conveyor Simulation */}
+          {/* Photorealistic 3D WebGL Conveyor Simulation Canvas */}
           <ConveyorHero3D />
 
-          {/* Middle / Bottom Content Grid */}
+          {/* Deep ambient contrast gradient overlay to ensure crystal clear readability */}
+          <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent z-5" />
+          <div className="absolute inset-0 pointer-events-none bg-radial-at-bl from-slate-950/90 via-transparent to-transparent z-5" />
+
+          {/* Hero Content Stack */}
           <div className="relative z-10 max-w-3xl space-y-6">
+            
+            {/* Pill Tag */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-bold text-brand-300 shadow-sm">
+              <Sparkles className="w-3.5 h-3.5 text-brand-400" />
+              <span>Next-Gen Hyperlocal &amp; Inter-City Dispatch</span>
+            </div>
+
+            {/* Headline */}
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-heading font-black text-white leading-[1.05] tracking-tight">
-              Ready to accelerate your inter-city delivery?
+              Speed-of-Light Last-Mile Logistics.
             </h1>
             
+            <p className="text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed">
+              Deterministic volumetric rating, automated proximity driver pairing, and real-time sub-second GPS telemetry built for modern commerce.
+            </p>
+
+            {/* Action Buttons */}
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Link
                 to="/register/customer"
-                className="px-6 py-3.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 text-white font-bold text-sm transition flex items-center gap-2"
+                className="px-6 py-3.5 rounded-full bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 text-white font-bold text-sm transition flex items-center gap-2 shadow-lg shadow-brand-600/40 hover:scale-105 active:scale-95"
               >
-                <span>Book Doorstep Pickup</span>
-                <ArrowRight className="w-4 h-4 text-brand-400" />
+                <span>Book Instant Pickup</span>
+                <ArrowRight className="w-4 h-4" />
               </Link>
 
               <a
                 href="#tracking"
-                className="px-6 py-3.5 rounded-full bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm transition shadow-lg shadow-brand-900/40 flex items-center gap-2"
+                className="px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-bold text-sm transition flex items-center gap-2"
               >
-                <Search className="w-4 h-4" />
-                <span>Track Consignment</span>
+                <Radio className="w-4 h-4 text-brand-400 animate-pulse" />
+                <span>Track Live Radar</span>
+              </a>
+
+              <a
+                href="#calculator"
+                className="px-6 py-3.5 rounded-full bg-slate-900/80 hover:bg-slate-800/80 backdrop-blur-md border border-slate-700 text-slate-200 font-bold text-sm transition flex items-center gap-2"
+              >
+                <Calculator className="w-4 h-4 text-slate-400" />
+                <span>Rate Estimator</span>
               </a>
             </div>
+
+            {/* Live Platform KPI Stats Bar */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-white/10 text-xs">
+              <div className="p-3 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10">
+                <span className="text-slate-400 block text-[11px]">Average Pairing</span>
+                <span className="text-lg font-black text-white mt-0.5 block font-heading">⚡ 12.4 Min</span>
+              </div>
+              <div className="p-3 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10">
+                <span className="text-slate-400 block text-[11px]">On-Time SLA</span>
+                <span className="text-lg font-black text-emerald-400 mt-0.5 block font-heading">🎯 99.8%</span>
+              </div>
+              <div className="p-3 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10">
+                <span className="text-slate-400 block text-[11px]">Express Hubs</span>
+                <span className="text-lg font-black text-amber-400 mt-0.5 block font-heading">📍 500+ Active</span>
+              </div>
+              <div className="p-3 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10">
+                <span className="text-slate-400 block text-[11px]">OTP Protected</span>
+                <span className="text-lg font-black text-teal-400 mt-0.5 block font-heading">🛡️ 100% Verified</span>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          3. REAL-TIME TRACKING LOOKUP RADAR BAR & INTEGRATED LIVE HUB
+          3. REAL-TIME TRACKING RADAR COCKPIT
       ───────────────────────────────────────────────────────────────────────────── */}
-      <section id="tracking" className="px-4 sm:px-8 max-w-7xl mx-auto -mt-6 mb-16 relative z-20">
-        <div className="bg-white rounded-3xl p-4 sm:p-8 shadow-xl border border-slate-200">
+      <section id="tracking" className="px-4 sm:px-8 max-w-7xl mx-auto -mt-8 mb-16 relative z-20">
+        <div className="bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-800">
           
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
                 <Radio className="w-5 h-5 text-brand-500 animate-pulse" />
-                <span>Live Inter-City Radar &amp; Parcel Tracking</span>
+                <span>Live Inter-City Radar &amp; Parcel Telemetry</span>
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-400 mt-0.5">
                 Instant GPS telemetry, corridor transit status, and automated driver ETA countdown.
               </p>
             </div>
             
-            {previewOrder && (
+            {/* Quick Sample Tracking Numbers */}
+            <div className="flex items-center gap-1.5 flex-wrap text-xs">
+              <span className="text-slate-500 font-mono text-[11px]">Try demo:</span>
               <button
                 type="button"
-                onClick={() => handleQuickTrackSubmit(undefined, previewOrder.trackingNumber)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition cursor-pointer self-start sm:self-auto"
+                onClick={() => {
+                  setTrackingInput('GTM-20260820-875171');
+                  handleQuickTrackSubmit(undefined, 'GTM-20260820-875171');
+                }}
+                className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-brand-400 font-mono text-[11px] border border-slate-700 transition cursor-pointer"
               >
-                <RefreshCw className={`w-3.5 h-3.5 ${isSearching ? 'animate-spin' : ''}`} />
-                <span>Refresh Telemetry</span>
+                GTM-20260820-875171
               </button>
-            )}
+            </div>
           </div>
 
           <form onSubmit={handleQuickTrackSubmit} className="flex flex-col md:flex-row items-center gap-3">
@@ -361,40 +449,40 @@ export const LandingPage: React.FC = () => {
                 type="text"
                 value={trackingInput}
                 onChange={(e) => setTrackingInput(e.target.value)}
-                placeholder="Enter Ship It tracking number (e.g. GTM-20260824-196623)..."
-                className="w-full pl-11 pr-4 py-3.5 text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 font-mono transition"
+                placeholder="Enter Ship It tracking number (e.g. GTM-20260820-875171)..."
+                className="w-full pl-11 pr-4 py-3.5 text-sm bg-slate-950 border border-slate-800 rounded-2xl text-white placeholder:text-slate-600 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 font-mono transition"
               />
             </div>
             
             <button
               type="submit"
               disabled={isSearching}
-              className="w-full md:w-auto px-8 py-3.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold rounded-2xl transition flex items-center justify-center gap-2 shadow-md shadow-brand-500/20 cursor-pointer disabled:opacity-50"
+              className="w-full md:w-auto px-8 py-3.5 bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 text-white text-sm font-bold rounded-2xl transition flex items-center justify-center gap-2 shadow-lg shadow-brand-600/30 cursor-pointer disabled:opacity-50"
             >
               {isSearching ? <span className="animate-spin">↻</span> : <Radio className="w-4 h-4 text-white" />}
-              <span>Track Live</span>
+              <span>Track Live Telemetry</span>
             </button>
           </form>
 
           {searchError && (
-            <div className="mt-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-semibold flex items-center gap-2">
+            <div className="mt-4 p-3.5 rounded-xl bg-rose-950/50 border border-rose-800 text-xs text-rose-300 font-semibold flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{searchError}</span>
             </div>
           )}
 
           {/* ─────────────────────────────────────────────────────────────────────────────
-              COMPREHENSIVE IN-PAGE LIVE RADAR EXPERIENCE
+              ACTIVE LIVE TELEMETRY DASHBOARD PREVIEW
           ───────────────────────────────────────────────────────────────────────────── */}
           {previewOrder && previewLiveTracking && (
             <div className="mt-6 space-y-6 animate-in fade-in duration-300">
               
               {/* Top Banner with Tracking Number & Active Status */}
-              <div className="p-6 rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border border-slate-800 text-white shadow-xl">
+              <div className="p-6 rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-xl">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-800">
                   <div>
                     <div className="flex items-center gap-2.5 flex-wrap">
-                      <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-orange-600 text-white flex items-center gap-1.5">
+                      <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-brand-600 text-white flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
                         <span>{previewOrder.status}</span>
                       </span>
@@ -415,7 +503,7 @@ export const LandingPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* 6-Step Visual Milestone Progress Bar */}
+                {/* 6-Step Visual Milestone Stepper */}
                 <div className="py-6 border-b border-slate-800">
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
                     {deliverySteps.map((step, idx) => {
@@ -450,25 +538,25 @@ export const LandingPage: React.FC = () => {
 
                 {/* Real-time Telemetry Metrics Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-5 text-xs">
-                  <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
+                  <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
                     <span className="text-slate-400 block text-[11px]">Assigned Driver</span>
                     <span className="font-bold text-white text-sm mt-0.5 block truncate">
                       {previewLiveTracking.deliveryPartner?.name || 'Rajesh Kumar'}
                     </span>
                   </div>
-                  <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
+                  <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
                     <span className="text-slate-400 block text-[11px]">Distance Remaining</span>
                     <span className="font-bold text-emerald-400 text-sm mt-0.5 block">
                       {previewLiveTracking.distanceRemaining || 3.4} km
                     </span>
                   </div>
-                  <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
+                  <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
                     <span className="text-slate-400 block text-[11px]">Estimated Arrival</span>
                     <span className="font-bold text-amber-400 text-sm mt-0.5 block">
                       ~{previewLiveTracking.etaMinutes || 12} mins
                     </span>
                   </div>
-                  <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
+                  <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
                     <span className="text-slate-400 block text-[11px]">Fleet Vehicle</span>
                     <span className="font-bold text-white text-sm mt-0.5 block font-mono">
                       {previewLiveTracking.deliveryPartner?.vehicleNumber || 'DL-03-EV-9821'}
@@ -481,37 +569,37 @@ export const LandingPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {/* Left: Origin & Destination Route Card */}
-                <div className="p-5 rounded-3xl bg-slate-50/80 border border-slate-200 space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <div className="p-5 rounded-3xl bg-slate-950 border border-slate-800 space-y-4">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                     <MapPin className="w-4 h-4 text-brand-500" />
                     <span>Corridor Route &amp; Addresses</span>
                   </h4>
 
                   {/* Pickup Endpoint */}
-                  <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-                    <div className="w-8 h-8 rounded-full bg-brand-50 text-brand-500 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-900 border border-slate-800">
+                    <div className="w-8 h-8 rounded-full bg-brand-500/10 text-brand-400 flex items-center justify-center shrink-0 mt-0.5">
                       <Package className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold uppercase text-brand-600">Origin / Pickup</span>
-                      <h5 className="text-xs font-bold text-slate-900 mt-0.5">{previewOrder.pickupName}</h5>
-                      <p className="text-xs text-slate-500 mt-0.5">{previewOrder.pickupAddress}</p>
-                      <span className="inline-block mt-1 font-mono text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-700">
+                      <span className="text-[10px] font-bold uppercase text-brand-400">Origin / Pickup</span>
+                      <h5 className="text-xs font-bold text-white mt-0.5">{previewOrder.pickupName}</h5>
+                      <p className="text-xs text-slate-400 mt-0.5">{previewOrder.pickupAddress}</p>
+                      <span className="inline-block mt-1 font-mono text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-300">
                         PIN: {previewOrder.pickupPincode}
                       </span>
                     </div>
                   </div>
 
                   {/* Destination Endpoint */}
-                  <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-                    <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-900 border border-slate-800">
+                    <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
                       <CheckCircle2 className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold uppercase text-emerald-700">Destination / Dropoff</span>
-                      <h5 className="text-xs font-bold text-slate-900 mt-0.5">{previewOrder.dropName}</h5>
-                      <p className="text-xs text-slate-500 mt-0.5">{previewOrder.dropAddress}</p>
-                      <span className="inline-block mt-1 font-mono text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-700">
+                      <span className="text-[10px] font-bold uppercase text-emerald-400">Destination / Dropoff</span>
+                      <h5 className="text-xs font-bold text-white mt-0.5">{previewOrder.dropName}</h5>
+                      <p className="text-xs text-slate-400 mt-0.5">{previewOrder.dropAddress}</p>
+                      <span className="inline-block mt-1 font-mono text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-300">
                         PIN: {previewOrder.dropPincode}
                       </span>
                     </div>
@@ -519,35 +607,35 @@ export const LandingPage: React.FC = () => {
                 </div>
 
                 {/* Right: Milestone Event Timeline */}
-                <div className="p-5 rounded-3xl bg-slate-50/80 border border-slate-200 space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <div className="p-5 rounded-3xl bg-slate-950 border border-slate-800 space-y-4">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                     <Clock className="w-4 h-4 text-brand-500" />
                     <span>Real-Time Milestone Log</span>
                   </h4>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2.5">
                     {trackingTimeline.length > 0 ? (
                       trackingTimeline.map((ev, idx) => (
-                        <div key={idx} className="flex items-start gap-3 p-3 rounded-2xl bg-white border border-slate-200/70 text-xs">
+                        <div key={idx} className="flex items-start gap-3 p-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs">
                           <div className="w-2 h-2 rounded-full bg-brand-500 mt-1.5 shrink-0" />
                           <div className="flex-1">
                             <div className="flex items-center justify-between">
-                              <strong className="text-slate-900">{ev.newStatus}</strong>
-                              <span className="text-[10px] text-slate-400 font-mono">
+                              <strong className="text-white">{ev.newStatus}</strong>
+                              <span className="text-[10px] text-slate-500 font-mono">
                                 {ev.eventTimestamp ? new Date(ev.eventTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Live'}
                               </span>
                             </div>
-                            <p className="text-slate-500 mt-0.5 text-[11px]">{ev.remarks || `Status updated to ${ev.newStatus} by ${ev.actorName || 'System'}`}</p>
+                            <p className="text-slate-400 mt-0.5 text-[11px]">{ev.remarks || `Status updated to ${ev.newStatus}`}</p>
                           </div>
                         </div>
                       ))
                     ) : (
-                      <div className="p-4 rounded-2xl bg-white border border-slate-200 text-xs text-slate-600 space-y-2">
-                        <div className="flex items-center justify-between text-slate-900 font-semibold">
+                      <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-slate-400 space-y-2">
+                        <div className="flex items-center justify-between text-white font-semibold">
                           <span>Corridor Transit Active</span>
-                          <span className="text-[10px] font-mono text-emerald-600 font-bold">LIVE TELEMETRY</span>
+                          <span className="text-[10px] font-mono text-emerald-400 font-bold">LIVE TELEMETRY</span>
                         </div>
-                        <p className="text-slate-500 text-[11px]">
+                        <p className="text-slate-400 text-[11px]">
                           Driver {previewLiveTracking.deliveryPartner?.name || 'Partner'} is moving along the designated corridor. Updates are broadcast via sub-second WebSocket telemetry.
                         </p>
                       </div>
@@ -564,325 +652,426 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          4. SERVICES MULTI-MODAL SLIDER (Inter-City Corridor Delivery)
+          4. INTERACTIVE VOLUMETRIC RATE CALCULATOR TOOL
       ───────────────────────────────────────────────────────────────────────────── */}
-      <section 
-        id="services" 
-        className="py-16 px-4 sm:px-8 max-w-7xl mx-auto bg-slate-50/60 rounded-[3rem] border border-slate-200/60 overflow-hidden"
-        onMouseEnter={() => setIsSliderPaused(true)}
-        onMouseLeave={() => setIsSliderPaused(false)}
-      >
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-          <div className="space-y-3">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-600 shadow-xs">
-              Inter-City Services
+      <section id="calculator" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto">
+        <div className="rounded-[2.5rem] bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 border border-slate-800 p-6 sm:p-12 shadow-2xl">
+          
+          <div className="max-w-3xl mb-10 space-y-3">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/30 text-[11px] font-bold uppercase tracking-wider text-brand-400">
+              <Calculator className="w-3.5 h-3.5" />
+              <span>Deterministic Rating Engine</span>
             </span>
-            <h2 className="text-3xl sm:text-5xl font-heading font-black text-slate-900 tracking-tight">
-              All set for seamless inter-city logistics
+            <h2 className="text-3xl sm:text-5xl font-heading font-black text-white tracking-tight">
+              Instant Volumetric Rate Calculator
+            </h2>
+            <p className="text-slate-400 text-sm sm:text-base">
+              Calculate exact shipping costs in real-time based on actual dead weight versus cubic dimensional weight: <span className="font-mono text-brand-400">(L × B × H) / 5000</span>.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            {/* Left Form Controls (7 Cols) */}
+            <div className="lg:col-span-7 space-y-6">
+              
+              {/* Route Type Selector */}
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                  Route Scope
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setCalcRouteType('INTRA_ZONE')}
+                    className={`p-3.5 rounded-2xl border text-xs font-bold flex items-center justify-between transition cursor-pointer ${
+                      calcRouteType === 'INTRA_ZONE'
+                        ? 'bg-brand-500/10 border-brand-500 text-white ring-1 ring-brand-500'
+                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="text-left">
+                      <div>Intra-City Zone</div>
+                      <div className="text-[10px] text-slate-500 font-normal mt-0.5">Same Hub / Same City</div>
+                    </div>
+                    {calcRouteType === 'INTRA_ZONE' && <Check className="w-4 h-4 text-brand-400" />}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setCalcRouteType('INTER_ZONE')}
+                    className={`p-3.5 rounded-2xl border text-xs font-bold flex items-center justify-between transition cursor-pointer ${
+                      calcRouteType === 'INTER_ZONE'
+                        ? 'bg-brand-500/10 border-brand-500 text-white ring-1 ring-brand-500'
+                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="text-left">
+                      <div>Inter-City Corridor</div>
+                      <div className="text-[10px] text-slate-500 font-normal mt-0.5">Between Different Cities</div>
+                    </div>
+                    {calcRouteType === 'INTER_ZONE' && <Check className="w-4 h-4 text-brand-400" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Package Dimensions (L, B, H) */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  Parcel Dimensions (Centimeters)
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <span className="text-[10px] text-slate-500 block mb-1">Length (cm)</span>
+                    <input
+                      type="number"
+                      min="1"
+                      value={calcLength}
+                      onChange={(e) => setCalcLength(Math.max(1, Number(e.target.value)))}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:border-brand-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-500 block mb-1">Breadth (cm)</span>
+                    <input
+                      type="number"
+                      min="1"
+                      value={calcBreadth}
+                      onChange={(e) => setCalcBreadth(Math.max(1, Number(e.target.value)))}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:border-brand-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-500 block mb-1">Height (cm)</span>
+                    <input
+                      type="number"
+                      min="1"
+                      value={calcHeight}
+                      onChange={(e) => setCalcHeight(Math.max(1, Number(e.target.value)))}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:border-brand-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Actual Physical Dead Weight */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    Actual Dead Weight
+                  </label>
+                  <span className="text-xs font-mono font-bold text-brand-400">{calcActualWeight} kg</span>
+                </div>
+                <input
+                  type="range"
+                  min="0.1"
+                  max="30"
+                  step="0.1"
+                  value={calcActualWeight}
+                  onChange={(e) => setCalcActualWeight(Number(e.target.value))}
+                  className="w-full accent-brand-500 bg-slate-800 rounded-lg cursor-pointer h-2"
+                />
+                <div className="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                  <span>0.1 kg</span>
+                  <span>15 kg</span>
+                  <span>30 kg</span>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Right Computed Rate Card (5 Cols) */}
+            <div className="lg:col-span-5 p-6 rounded-3xl bg-slate-950 border border-slate-800 space-y-6 shadow-xl">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Estimated Price</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
+                  B2C Standard Rate
+                </span>
+              </div>
+
+              <div className="text-center py-2">
+                <span className="text-4xl sm:text-5xl font-black font-heading text-white tracking-tight">
+                  ₹{calculatedEstimates.charge}
+                </span>
+                <span className="text-xs text-slate-500 block mt-1">
+                  Estimated Transit Time: <strong className="text-slate-300">{calculatedEstimates.transitTime}</strong>
+                </span>
+              </div>
+
+              {/* Weight Breakdown Comparison */}
+              <div className="space-y-2.5 text-xs bg-slate-900/60 p-4 rounded-2xl border border-slate-800/80">
+                <div className="flex justify-between text-slate-400">
+                  <span>Actual Scale Weight:</span>
+                  <span className="font-mono text-white font-bold">{calcActualWeight} kg</span>
+                </div>
+                <div className="flex justify-between text-slate-400">
+                  <span>Volumetric Weight:</span>
+                  <span className="font-mono text-brand-400 font-bold">{calculatedEstimates.volumetricWeight} kg</span>
+                </div>
+                <div className="flex justify-between text-slate-200 font-bold pt-2 border-t border-slate-800">
+                  <span>Billable Weight:</span>
+                  <span className="font-mono text-emerald-400">{calculatedEstimates.billableWeight} kg</span>
+                </div>
+              </div>
+
+              <Link
+                to="/register/customer"
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-brand-600/30"
+              >
+                <span>Dispatch Shipment at this Rate</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────────────────────
+          5. FLEET & SERVICES SHOWCASE
+      ───────────────────────────────────────────────────────────────────────────── */}
+      <section id="services" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div className="space-y-3">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <Truck className="w-3.5 h-3.5 text-brand-400" />
+              <span>Corridor Transit &amp; Fleet Solutions</span>
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-heading font-black text-white tracking-tight">
+              Engineered for Every Cargo Dimension
             </h2>
           </div>
 
-          {/* Animated Moving Slider Bar & Controls (Zomato Theme) */}
-          <div className="flex items-center gap-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full border border-slate-200 shadow-xs self-start md:self-auto">
-            {/* Active Step Counter */}
-            <span className="text-xs font-mono font-bold text-brand-600">
-              0{activeServiceSlide + 1}
-            </span>
-
-            {/* Dynamic Moving Slider Bar (Zomato Crimson Red) */}
-            <div className="relative w-28 sm:w-40 h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200/60">
-              <div 
-                className="absolute top-0 bottom-0 left-0 bg-gradient-to-r from-brand-600 via-brand-500 to-rose-500 rounded-full transition-all duration-500 shadow-xs shadow-brand-500/50"
-                style={{ 
-                  width: `${((activeServiceSlide + 1) / services.length) * 100}%` 
-                }}
-              />
-            </div>
-
-            {/* Total Count */}
-            <span className="text-xs font-mono font-bold text-slate-400">
-              0{services.length}
-            </span>
-
-            {/* Slider Navigation Buttons */}
-            <div className="flex items-center gap-1.5 pl-2 border-l border-slate-200">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0">
+            {services.map((s, idx) => (
               <button
+                key={idx}
                 type="button"
-                onClick={() => setActiveServiceSlide((prev) => (prev === 0 ? services.length - 1 : prev - 1))}
-                className="w-8 h-8 rounded-full bg-slate-100 text-slate-700 hover:bg-brand-500 hover:text-white flex items-center justify-center transition shadow-2xs cursor-pointer"
-                aria-label="Previous service"
+                onClick={() => setActiveServiceTab(idx)}
+                className={`px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+                  activeServiceTab === idx
+                    ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30'
+                    : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                }`}
               >
-                <ChevronLeft className="w-4 h-4" />
+                {s.tag}
               </button>
-              <button
-                type="button"
-                onClick={() => setActiveServiceSlide((prev) => (prev === services.length - 1 ? 0 : prev + 1))}
-                className="w-8 h-8 rounded-full bg-brand-500 text-white hover:bg-brand-600 flex items-center justify-center transition shadow-sm shadow-brand-500/30 cursor-pointer"
-                aria-label="Next service"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Dynamic Sliding Cards Track */}
-        <div className="relative overflow-hidden pt-2 pb-4">
-          <div 
-            className="flex transition-transform duration-700 ease-out gap-6"
-            style={{
-              transform: `translateX(-${activeServiceSlide * 100}%)`,
-            }}
-          >
-            {services.map((srv, idx) => {
-              const isActive = idx === activeServiceSlide;
-              return (
-                <div
-                  key={idx}
-                  className={`w-full min-w-full sm:min-w-[calc(50%-12px)] lg:min-w-[calc(33.333%-16px)] xl:min-w-[calc(25%-18px)] rounded-3xl overflow-hidden bg-white border transition-all duration-500 flex flex-col shrink-0 ${
-                    isActive 
-                      ? 'border-brand-500/60 shadow-xl shadow-brand-500/10 ring-2 ring-brand-500/20' 
-                      : 'border-slate-200 shadow-sm hover:shadow-md'
-                  }`}
-                >
-                  {/* Image Container */}
-                  <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={srv.image}
-                      alt={srv.title}
-                      className="w-full h-full object-cover transition duration-500 hover:scale-105"
-                    />
-                    <div className={`absolute top-3 left-3 px-2.5 py-1 rounded-full backdrop-blur-md text-[10px] font-bold uppercase tracking-wider transition ${
-                      isActive ? 'bg-brand-500 text-white shadow-xs' : 'bg-black/60 text-white'
-                    }`}>
-                      {srv.tag}
-                    </div>
-                  </div>
-
-                  {/* Body */}
-                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                    <div>
-                      <h3 className={`text-lg font-bold transition ${
-                        isActive ? 'text-brand-600' : 'text-slate-900'
-                      }`}>
-                        {srv.title}
-                      </h3>
-                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                        {srv.desc}
-                      </p>
-                    </div>
-
-                    <Link
-                      to="/register"
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-900 hover:text-brand-600 transition pt-2 border-t border-slate-100"
-                    >
-                      <span>Explore Corridor Slabs</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-brand-500" />
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Interactive Segmented Progress Slider Dots (Clickable) */}
-        <div className="flex items-center justify-center gap-2.5 mt-6">
-          {services.map((_, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => setActiveServiceSlide(idx)}
-              className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                idx === activeServiceSlide
-                  ? 'w-10 bg-brand-500 shadow-sm shadow-brand-500/40'
-                  : 'w-2.5 bg-slate-200 hover:bg-slate-300'
-              }`}
-              aria-label={`Go to slide ${idx + 1}`}
+        {/* Highlighted Service Card */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center rounded-[2.5rem] bg-slate-900 border border-slate-800 p-6 sm:p-10 shadow-2xl">
+          <div className="lg:col-span-6 relative h-64 sm:h-80 rounded-3xl overflow-hidden border border-slate-800 shadow-inner">
+            <img
+              src={services[activeServiceTab].image}
+              alt={services[activeServiceTab].title}
+              className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+            <div className="absolute bottom-4 left-4">
+              <span className={`px-3 py-1 rounded-full text-xs font-bold border ${services[activeServiceTab].badgeColor}`}>
+                {services[activeServiceTab].tag}
+              </span>
+            </div>
+          </div>
+
+          <div className="lg:col-span-6 space-y-6">
+            <h3 className="text-2xl sm:text-3xl font-heading font-black text-white tracking-tight">
+              {services[activeServiceTab].title}
+            </h3>
+
+            <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+              {services[activeServiceTab].desc}
+            </p>
+
+            <div className="grid grid-cols-2 gap-4 text-xs">
+              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+                <span className="text-slate-500 block text-[11px]">Guaranteed SLA</span>
+                <span className="text-base font-bold text-white mt-0.5 block">{services[activeServiceTab].sla}</span>
+              </div>
+              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+                <span className="text-slate-500 block text-[11px]">Vehicle Assignment</span>
+                <span className="text-base font-bold text-brand-400 mt-0.5 block">{services[activeServiceTab].type}</span>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <Link
+                to="/register/customer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-slate-900 hover:bg-slate-100 font-bold text-xs transition shadow-md"
+              >
+                <span>Dispatch with this Service</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────────────────────
+          6. ARCHITECTURAL PILLARS & FEATURES
+      ───────────────────────────────────────────────────────────────────────────── */}
+      <section id="features" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto">
+        <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            <Cpu className="w-3.5 h-3.5 text-brand-400" />
+            <span>Platform Capabilities</span>
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-heading font-black text-white tracking-tight">
+            Built for High-Velocity Scale
+          </h2>
+          <p className="text-slate-400 text-sm sm:text-base">
+            Engineered with a clean separation of concerns, finite state machines, and cryptographic auditability.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-brand-500/40 transition-all duration-300 space-y-4 group">
+            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Calculator className="w-6 h-6" />
+            </div>
+            <h4 className="text-base font-bold text-white">Volumetric Pricing</h4>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Deterministic billable rating based on cubic parcel dimensions prevents carrier weight discrepancies.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-emerald-500/40 transition-all duration-300 space-y-4 group">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Navigation className="w-6 h-6" />
+            </div>
+            <h4 className="text-base font-bold text-white">Proximity Auto-Pairing</h4>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Real-time driver location and workload quota balancing assigns pickups in under 15 minutes.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-amber-500/40 transition-all duration-300 space-y-4 group">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <RefreshCw className="w-6 h-6" />
+            </div>
+            <h4 className="text-base font-bold text-white">Self-Service Recovery</h4>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Multi-attempt failed delivery recovery empowers customers to pick custom reschedule windows with 1-click.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all duration-300 space-y-4 group">
+            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <h4 className="text-base font-bold text-white">Immutable Event Logs</h4>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Append-only audit trail logs every state transition, GPS waypoint, and actor timestamp securely.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────────────────────
+          7. FAQ ACCORDION SECTION
+      ───────────────────────────────────────────────────────────────────────────── */}
+      <section id="faq" className="py-16 px-4 sm:px-8 max-w-4xl mx-auto">
+        <div className="text-center mb-12 space-y-3">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            <HelpCircle className="w-3.5 h-3.5 text-brand-400" />
+            <span>Got Questions?</span>
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-heading font-black text-white tracking-tight">
+            Frequently Asked Questions
+          </h2>
+        </div>
+
+        <div className="space-y-3">
+          {faqs.map((faq, idx) => (
+            <div
+              key={idx}
+              className="rounded-2xl border border-slate-800 bg-slate-900/60 overflow-hidden transition"
+            >
+              <button
+                type="button"
+                onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+                className="w-full p-5 text-left flex items-center justify-between text-sm font-bold text-white cursor-pointer"
+              >
+                <span>{faq.q}</span>
+                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${
+                  activeFaq === idx ? 'rotate-180 text-brand-400' : ''
+                }`} />
+              </button>
+
+              {activeFaq === idx && (
+                <div className="px-5 pb-5 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-slate-800/60 pt-3">
+                  {faq.a}
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          5. TESTIMONIALS & TRUSTED COURIER NETWORK
+          8. CALL TO ACTION SECTION
       ───────────────────────────────────────────────────────────────────────────── */}
-      <section className="py-20 px-4 sm:px-8 max-w-7xl mx-auto">
-        <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-600">
-            Client Trust
-          </span>
-          <h2 className="text-3xl sm:text-5xl font-heading font-black text-slate-900 tracking-tight">
-            Trusted by businesses for daily inter-city shipping
-          </h2>
-        </div>
-
-        {/* Testimonial Quote Card with Floating Avatars */}
-        <div className="relative mt-12 max-w-3xl mx-auto bg-gradient-to-b from-slate-50 to-white rounded-3xl p-8 sm:p-12 border border-slate-200/80 shadow-lg text-center">
-          
-          {/* Avatar Cluster */}
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" className="w-9 h-9 rounded-full border-2 border-white shadow-xs object-cover" />
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="Avatar" className="w-12 h-12 rounded-full border-2 border-brand-500 shadow-md object-cover" />
-            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80" alt="Avatar" className="w-9 h-9 rounded-full border-2 border-white shadow-xs object-cover" />
-          </div>
-
-          <p className="text-base sm:text-xl font-medium text-slate-700 leading-relaxed italic max-w-xl mx-auto">
-            "We count on Ship It for our daily inter-city shipments and doorstep customer drops. Their real-time GPS telemetry, volumetric rate accuracy, and prompt milestone alerts keep our operations completely seamless."
-          </p>
-
-          <div className="mt-6">
-            <h4 className="font-bold text-slate-900 text-sm">Aarav Mehta</h4>
-            <p className="text-xs text-slate-500">Director of Operations · North India E-Commerce</p>
-          </div>
-        </div>
-
-        {/* Partners Logo Ticker */}
-        <div className="mt-16 text-center">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-6">
-            Integrated courier networks &amp; enterprise partners
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 opacity-60 grayscale hover:grayscale-0 transition duration-300">
-            <span className="font-black font-heading text-lg sm:text-xl tracking-wider text-slate-800">DELHIVERY</span>
-            <span className="font-black font-heading text-xl sm:text-2xl tracking-tighter text-slate-800">BlueDart</span>
-            <span className="font-black font-heading text-xl sm:text-2xl tracking-tighter text-slate-800">DTDC</span>
-            <span className="font-black font-heading text-xl sm:text-2xl tracking-tighter text-slate-800">FedEx</span>
-            <span className="font-black font-heading text-lg sm:text-xl tracking-tight text-slate-800">Trackon</span>
-          </div>
-        </div>
-      </section>
-
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          6. FAQ ACCORDION SECTION (Tailored for Inter-City Delivery)
-      ───────────────────────────────────────────────────────────────────────────── */}
-      <section id="faq" className="py-16 px-4 sm:px-8 max-w-4xl mx-auto">
-        <div className="text-center space-y-3 mb-12">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-600">
-            FAQ
-          </span>
-          <h2 className="text-3xl sm:text-5xl font-heading font-black text-slate-900 tracking-tight">
-            Questions? Glad you asked
-          </h2>
-        </div>
-
-        <div className="space-y-4">
-          {faqs.map((item, idx) => {
-            const isOpen = activeFaq === idx;
-            return (
-              <div
-                key={idx}
-                onClick={() => setActiveFaq(isOpen ? null : idx)}
-                className={`rounded-2xl border transition-all duration-200 cursor-pointer overflow-hidden ${
-                  isOpen ? 'bg-white border-brand-500/40 shadow-md' : 'bg-slate-50/70 border-slate-200/80 hover:bg-white'
-                }`}
-              >
-                <div className="p-5 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-mono font-bold text-xs shrink-0 ${
-                      isOpen ? 'bg-brand-500 text-white' : 'bg-slate-200 text-slate-700'
-                    }`}>
-                      0{idx + 1}
-                    </div>
-                    <h3 className="text-sm sm:text-base font-bold text-slate-900">
-                      {item.q}
-                    </h3>
-                  </div>
-                  <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180 text-brand-500' : ''}`} />
-                </div>
-
-                {isOpen && (
-                  <div className="px-5 pb-5 pt-0 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
-                    {item.a}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          7. CALL TO ACTION BANNER (Inter-City Dispatch)
-      ───────────────────────────────────────────────────────────────────────────── */}
-      <section className="py-12 px-4 sm:px-8 max-w-7xl mx-auto">
-        <div className="relative rounded-[2.5rem] overflow-hidden p-8 sm:p-14 bg-gradient-to-r from-slate-950 via-slate-900 to-black text-white shadow-2xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-8">
-          
-          <div className="relative z-10 space-y-4 max-w-xl">
-            <h2 className="text-3xl sm:text-5xl font-heading font-black tracking-tight leading-tight">
-              Ready to send your package to another city?
+      <section className="py-16 px-4 sm:px-8 max-w-7xl mx-auto">
+        <div className="relative rounded-[2.5rem] overflow-hidden bg-gradient-to-r from-brand-700 via-brand-600 to-rose-600 p-8 sm:p-14 text-white shadow-2xl text-center space-y-6">
+          <div className="max-w-2xl mx-auto space-y-4">
+            <h2 className="text-3xl sm:text-5xl font-heading font-black tracking-tight">
+              Accelerate Your Delivery Operations Today
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Book doorstep pickup in seconds with automated driver dispatch, transparent volumetric quotes, and OTP-secured delivery.
+            <p className="text-sm sm:text-base text-white/80 leading-relaxed">
+              Experience the speed, reliability, and precision of Ship It for your parcels, e-commerce orders, and corridor freight.
             </p>
           </div>
 
-          <div className="relative z-10 flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <Link
               to="/register/customer"
-              className="px-8 py-4 rounded-full bg-gradient-to-r from-brand-600 to-rose-500 hover:from-brand-700 hover:to-brand-600 font-bold text-sm text-white transition shadow-lg shadow-brand-900/40 text-center flex items-center justify-center gap-2"
+              className="px-8 py-3.5 rounded-full bg-white text-slate-900 hover:bg-slate-100 font-bold text-sm transition shadow-lg hover:scale-105 active:scale-95"
             >
-              <span>Book Inter-City Pickup</span>
-              <ArrowRight className="w-4 h-4" />
+              Create Free Account
+            </Link>
+            <Link
+              to="/login"
+              className="px-8 py-3.5 rounded-full bg-black/30 hover:bg-black/40 backdrop-blur-md border border-white/20 text-white font-bold text-sm transition"
+            >
+              Log in to Portal
             </Link>
           </div>
         </div>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          8. ENTERPRISE FOOTER
+          9. FOOTER
       ───────────────────────────────────────────────────────────────────────────── */}
-      <footer className="pt-16 pb-12 px-4 sm:px-8 max-w-7xl mx-auto border-t border-slate-200 mt-12 text-xs text-slate-500">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+      <footer className="border-t border-slate-900 bg-slate-950 py-12 px-4 sm:px-8 text-xs text-slate-500">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           
-          <div className="col-span-2 space-y-3">
-            <GatimanLogo to="/" />
-            <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
-              Next-generation inter-city &amp; urban logistics operating system with real-time GPS telemetry, volumetric rate cards, and automated EV fleet dispatch.
-            </p>
+          <div className="flex items-center gap-3">
+            <GatimanLogo to="/" textColor="text-white" />
+            <span className="text-slate-600">|</span>
+            <span>Intelligent Last-Mile Logistics</span>
           </div>
 
-          <div>
-            <h4 className="font-bold text-slate-900 mb-3 uppercase tracking-wider text-[11px]">Company</h4>
-            <ul className="space-y-2">
-              <li><a href="#home" className="hover:text-slate-900 transition">About Ship It</a></li>
-              <li><a href="#services" className="hover:text-slate-900 transition">Inter-City Network</a></li>
-              <li><a href="#faq" className="hover:text-slate-900 transition">Fleet Hubs</a></li>
-              <li><Link to="/login" className="hover:text-slate-900 transition">Contact Operations</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-slate-900 mb-3 uppercase tracking-wider text-[11px]">Services</h4>
-            <ul className="space-y-2">
-              <li><a href="#services" className="hover:text-slate-900 transition">Same-Day Corridor Express</a></li>
-              <li><a href="#services" className="hover:text-slate-900 transition">Doorstep Hyperlocal</a></li>
-              <li><a href="#services" className="hover:text-slate-900 transition">Heavy Cargo Freight</a></li>
-              <li><a href="#services" className="hover:text-slate-900 transition">EV Urban Dispatch</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-slate-900 mb-3 uppercase tracking-wider text-[11px]">Tracking &amp; Portals</h4>
-            <ul className="space-y-2">
-              <li><a href="#tracking" className="hover:text-slate-900 transition">Live Parcel Radar</a></li>
-              <li><a href="#faq" className="hover:text-slate-900 transition">Help Center &amp; FAQ</a></li>
-              <li><Link to="/login" className="hover:text-slate-900 transition">Driver Portal</Link></li>
-              <li><Link to="/login" className="hover:text-slate-900 transition">Admin Console</Link></li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="pt-8 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]">
-          <p>© 2026 Ship It Logistics Platform. All Rights Reserved.</p>
           <div className="flex items-center gap-6">
-            <a href="#home" className="hover:text-slate-900 transition">Terms of Service</a>
-            <a href="#home" className="hover:text-slate-900 transition">Privacy Policy</a>
-            <a href="#home" className="hover:text-slate-900 transition">Security Overview</a>
+            <a href="https://github.com/rakshitp18/Last-Mile-Delivery-Tracker" target="_blank" rel="noopener noreferrer" className="hover:text-white transition flex items-center gap-1.5">
+              <span>GitHub</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+            <Link to="/login" className="hover:text-white transition">Portal Login</Link>
+            <a href="#tracking" className="hover:text-white transition">Live Radar</a>
           </div>
+
+          <div className="text-center sm:text-right">
+            <p>© 2026 **Rakshit Pandey**. All Rights Reserved.</p>
+          </div>
+
         </div>
       </footer>
 
     </div>
   );
 };
-
