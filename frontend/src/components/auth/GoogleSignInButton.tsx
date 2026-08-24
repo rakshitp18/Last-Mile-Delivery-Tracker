@@ -129,6 +129,50 @@ export const GoogleSignInButton: React.FC<Props> = ({
   };
 
   const handleButtonClick = () => {
+    if ((window as any).google?.accounts?.oauth2) {
+      try {
+        const client = tokenClient || (window as any).google.accounts.oauth2.initTokenClient({
+          client_id: googleClientId,
+          scope: 'email profile openid',
+          callback: async (tokenResponse: any) => {
+            if (tokenResponse && tokenResponse.access_token) {
+              setIsLoading(true);
+              try {
+                const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                  headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+                });
+                const googleUser = await userInfoRes.json();
+
+                const user = await loginWithGoogle({
+                  credential: 'google-oauth-token',
+                  email: googleUser.email,
+                  firstName: googleUser.given_name || googleUser.name || 'Google',
+                  lastName: googleUser.family_name || 'User',
+                  customerType: selectedType,
+                });
+
+                if (user.role === 'ADMIN') navigate('/admin/dashboard');
+                else if (user.role === 'DELIVERY_AGENT') navigate('/agent/dashboard');
+                else navigate('/customer/dashboard');
+              } catch {
+                setShowConfigModal(true);
+              } finally {
+                setIsLoading(false);
+              }
+            }
+          },
+          error_callback: () => {
+            setShowConfigModal(true);
+          },
+        });
+        setTokenClient(client);
+        client.requestAccessToken({ prompt: 'select_account' });
+        return;
+      } catch (e) {
+        console.warn('Direct OAuth2 token client trigger error:', e);
+      }
+    }
+
     if (tokenClient) {
       try {
         tokenClient.requestAccessToken({ prompt: 'select_account' });
