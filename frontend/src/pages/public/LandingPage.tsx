@@ -219,15 +219,14 @@ export const LandingPage: React.FC = () => {
     <div className="relative min-h-screen bg-slate-50/80 text-slate-900 font-sans selection:bg-brand-500 selection:text-white antialiased overflow-x-hidden">
       
       {/* ─────────────────────────────────────────────────────────────────────────────
-          FULL-SCREEN 3D CONVEYOR BELT BACKGROUND (Spans entire background)
+          FULL-SCREEN 3D CONVEYOR BELT BACKGROUND (Spans entire background, vivid on the right)
       ───────────────────────────────────────────────────────────────────────────── */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         {/* Full Bleed 3D Canvas */}
         <ConveyorHero3D className="absolute inset-0 w-full h-full" showOverlay={false} />
         
-        {/* Atmospheric Light Scrims for pristine readability across entire page */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-50/50 via-slate-50/80 to-slate-50/95 pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-orange-100/40 via-transparent to-slate-50/60 pointer-events-none" />
+        {/* Soft directional scrim only on the left side to protect hero text contrast */}
+        <div className="absolute inset-y-0 left-0 w-full lg:w-1/2 bg-gradient-to-r from-slate-50/85 via-slate-50/30 to-transparent pointer-events-none" />
       </div>
 
       {/* ─────────────────────────────────────────────────────────────────────────────

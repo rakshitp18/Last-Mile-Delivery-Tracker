@@ -286,20 +286,20 @@ export const ConveyorHero3D: React.FC<ConveyorHero3DProps> = ({
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1.35;
     container.appendChild(renderer.domElement);
 
-    // 3. Studio Lighting (Warm Key + Soft Cyan Rim + Ambient)
-    const ambientLight = new THREE.AmbientLight('#ffffff', 1.6);
+    // 3. Studio Lighting (Crisp High-Visibility Commercial Key + Rim + Ambient)
+    const ambientLight = new THREE.AmbientLight('#ffffff', 2.4);
     scene.add(ambientLight);
 
-    const hemiLight = new THREE.HemisphereLight('#ffffff', '#edf5b0', 1.1);
+    const hemiLight = new THREE.HemisphereLight('#ffffff', '#dbeafe', 1.6);
     hemiLight.position.set(0, 20, 0);
     scene.add(hemiLight);
 
-    // Key Directional Light (Casts soft directional shadows)
-    const dirLight = new THREE.DirectionalLight('#fffdf0', 2.9);
-    dirLight.position.set(12, 22, 10);
+    // Key Directional Light (Casts crisp directional shadows)
+    const dirLight = new THREE.DirectionalLight('#ffffff', 3.8);
+    dirLight.position.set(12, 24, 10);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 2048;
     dirLight.shadow.mapSize.height = 2048;
@@ -310,11 +310,11 @@ export const ConveyorHero3D: React.FC<ConveyorHero3DProps> = ({
     dirLight.shadow.camera.top = 14;
     dirLight.shadow.camera.bottom = -14;
     dirLight.shadow.bias = -0.0002;
-    dirLight.shadow.radius = 2.8;
+    dirLight.shadow.radius = 2.4;
     scene.add(dirLight);
 
     // Soft Rim Light
-    const rimLight = new THREE.DirectionalLight('#bae6fd', 1.2);
+    const rimLight = new THREE.DirectionalLight('#93c5fd', 1.8);
     rimLight.position.set(-12, 8, -8);
     scene.add(rimLight);
 
@@ -361,9 +361,14 @@ export const ConveyorHero3D: React.FC<ConveyorHero3DProps> = ({
       map: phoneScreenTex,
     });
 
-    // 5. Conveyor Assembly
+    // 5. World Root Container (Shifted towards the right side of the screen for prominent hero staging)
+    const worldRoot = new THREE.Group();
+    worldRoot.position.set(4.2, 0, -1.8);
+    scene.add(worldRoot);
+
+    // 5.1 Conveyor Assembly
     const conveyorGroup = new THREE.Group();
-    scene.add(conveyorGroup);
+    worldRoot.add(conveyorGroup);
 
     // Diagonal angle: Exactly matches the reference image diagonal running from top-left to bottom-right
     const CONVEYOR_ROT_Y = -Math.PI / 4; // -45 degrees
@@ -471,7 +476,7 @@ export const ConveyorHero3D: React.FC<ConveyorHero3DProps> = ({
 
     // 7. Wall-to-Wall Dense Stacks of Pale Yellow Boxes (Matching Reference Environment)
     const yellowBoxesGroup = new THREE.Group();
-    scene.add(yellowBoxesGroup);
+    worldRoot.add(yellowBoxesGroup);
 
     // Stacks flanking the conveyor on both sides:
     // A. Upper-Right / Background Stacks
