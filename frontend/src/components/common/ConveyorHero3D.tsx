@@ -363,7 +363,7 @@ export const ConveyorHero3D: React.FC<ConveyorHero3DProps> = ({
 
     // 5. World Root Container
     const worldRoot = new THREE.Group();
-    worldRoot.position.set(-0.6, 0, 0.4);
+    worldRoot.position.set(-1.6, 0, 0.8);
     scene.add(worldRoot);
 
     // 5.1 Conveyor Assembly
