@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'motion/react';
 import { orderApi } from '../../api/orderApi';
 import { trackingApi, LiveTrackingData } from '../../api/trackingApi';
 import { Order, TrackingEvent, OrderStatus } from '../../types';
@@ -326,48 +327,36 @@ export const LandingPage: React.FC = () => {
             <GatimanLogo to="/" />
           </div>
 
-          {/* Center Navigation Links Capsule with Sliding Red Oval Pill */}
-          <nav
-            ref={navContainerRef}
-            className="relative hidden lg:flex items-center gap-1 bg-white/90 backdrop-blur-xl p-1.5 rounded-full border border-slate-200/90 shadow-lg shadow-slate-900/5 text-xs font-semibold text-slate-600"
-          >
-            {/* Sliding Red Oval Indicator */}
-            {indicatorStyle.width > 0 && (
-              <span
-                className="absolute rounded-full bg-gradient-to-r from-brand-600 via-red-600 to-rose-600 shadow-md shadow-brand-600/30 transition-all duration-300 ease-out pointer-events-none"
-                style={{
-                  left: `${indicatorStyle.left}px`,
-                  width: `${indicatorStyle.width}px`,
-                  height: `${indicatorStyle.height}px`,
-                  top: '6px',
-                }}
-              />
-            )}
-
+          {/* Center Navigation Links Capsule with Kokonut UI Spring Sliding Red Pill */}
+          <nav className="relative hidden lg:flex items-center gap-1 bg-white/90 backdrop-blur-xl p-1.5 rounded-full border border-slate-200/90 shadow-lg shadow-slate-900/5 text-xs font-semibold text-slate-600">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeNav === item.id;
               return (
                 <a
                   key={item.id}
-                  ref={(el) => {
-                    if (el) navItemRefs.current.set(item.id, el);
-                    else navItemRefs.current.delete(item.id);
-                  }}
                   href={item.href}
-                  onClick={() => {
-                    setActiveNav(item.id);
-                    updateIndicator(item.id);
-                  }}
-                  className={`relative z-10 px-3.5 py-1.5 rounded-full transition-colors duration-200 flex items-center gap-1.5 cursor-pointer font-bold select-none ${
+                  onClick={() => setActiveNav(item.id)}
+                  className={`relative px-3.5 py-1.5 rounded-full transition-colors duration-200 flex items-center gap-1.5 cursor-pointer font-bold select-none ${
                     isActive
                       ? 'text-white'
-                      : 'text-slate-600 hover:text-slate-900'
+                      : 'text-slate-600 hover:text-slate-950'
                   }`}
                 >
+                  {isActive && (
+                    <motion.div
+                      layoutId="landing-nav-active-pill"
+                      className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600 via-rose-600 to-brand-600 shadow-md shadow-red-600/30"
+                      transition={{
+                        type: 'spring',
+                        stiffness: 400,
+                        damping: 30,
+                      }}
+                    />
+                  )}
                   {Icon && (
                     <Icon
-                      className={`w-3.5 h-3.5 transition-colors duration-200 ${
+                      className={`relative z-10 w-3.5 h-3.5 transition-colors duration-200 ${
                         isActive
                           ? 'text-white'
                           : item.id === 'tracking'
@@ -376,7 +365,7 @@ export const LandingPage: React.FC = () => {
                       }`}
                     />
                   )}
-                  <span>{item.label}</span>
+                  <span className="relative z-10">{item.label}</span>
                 </a>
               );
             })}

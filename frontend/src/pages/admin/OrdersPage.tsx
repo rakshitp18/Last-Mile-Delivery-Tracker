@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useOrders, useOrderMutations } from '../../hooks/useOrders';
 import { useAgents } from '../../hooks/useAgents';
+import { SmoothTab } from '../../components/common/SmoothTab';
 import {
   Package,
   Search,
@@ -237,38 +238,21 @@ export const AdminOrdersPage: React.FC = () => {
 
       {/* 2. Fast Status Tabs + Search + Route Filter */}
       <div className="space-y-3">
-        {/* Status Stage Tabs */}
-        <div className="flex flex-wrap items-center gap-2 border-b border-slate-200/80 pb-2">
-          {[
-            { id: 'ALL', label: 'All Orders', count: orders.length },
-            { id: 'PENDING', label: 'Pending Dispatch', count: pendingCount, highlight: pendingCount > 0 },
-            { id: 'IN_TRANSIT', label: 'In Transit', count: inTransitCount },
-            { id: 'DELIVERED', label: 'Delivered', count: deliveredCount },
-            { id: 'EXCEPTIONS', label: 'Exceptions', count: exceptionsCount, alert: exceptionsCount > 0 },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setStatusTab(tab.id)}
-              className={`flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-bold transition cursor-pointer ${
-                statusTab === tab.id
-                  ? 'bg-orange-600 text-white shadow-xs'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-              }`}
-            >
-              <span>{tab.label}</span>
-              <span
-                className={`rounded-full px-1.5 py-0.2 text-[10px] ${
-                  statusTab === tab.id
-                    ? 'bg-white/20 text-white'
-                    : tab.highlight
-                    ? 'bg-amber-100 text-amber-800 font-black'
-                    : 'bg-slate-100 text-slate-600'
-                }`}
-              >
-                {tab.count}
-              </span>
-            </button>
-          ))}
+        {/* Status Stage Tabs with SmoothTab spring red theme */}
+        <div className="border-b border-slate-200/80 pb-2 overflow-x-auto">
+          <SmoothTab
+            selectedTabId={statusTab}
+            onChange={(tabId) => setStatusTab(tabId)}
+            activeColor="bg-gradient-to-r from-red-600 via-rose-600 to-brand-600 shadow-md shadow-brand-600/30"
+            className="w-full sm:w-auto inline-flex bg-white/90"
+            items={[
+              { id: 'ALL', title: 'All Orders', count: orders.length },
+              { id: 'PENDING', title: 'Pending Dispatch', count: pendingCount },
+              { id: 'IN_TRANSIT', title: 'In Transit', count: inTransitCount },
+              { id: 'DELIVERED', title: 'Delivered', count: deliveredCount },
+              { id: 'EXCEPTIONS', title: 'Exceptions', count: exceptionsCount },
+            ]}
+          />
         </div>
 
         {/* Search & Route Filters Bar */}
