@@ -361,9 +361,9 @@ export const ConveyorHero3D: React.FC<ConveyorHero3DProps> = ({
       map: phoneScreenTex,
     });
 
-    // 5. World Root Container (Shifted towards the right side of the screen for prominent hero staging)
+    // 5. World Root Container
     const worldRoot = new THREE.Group();
-    worldRoot.position.set(4.2, 0, -1.8);
+    worldRoot.position.set(0, 0, 0);
     scene.add(worldRoot);
 
     // 5.1 Conveyor Assembly
@@ -484,7 +484,7 @@ export const ConveyorHero3D: React.FC<ConveyorHero3DProps> = ({
       for (let row = -18; row <= 8; row += 1.62) {
         // Distance check from diagonal conveyor center (x + z)
         const distFromConveyor = (col + row);
-        if (distFromConveyor < 1.8) continue; // Keep conveyor channel clear
+        if (distFromConveyor < 2.4) continue; // Keep conveyor channel clear
 
         const stackHeight = (col > 2 || row < -2) ? 3 : 2;
         for (let h = 0; h < stackHeight; h++) {
@@ -502,13 +502,13 @@ export const ConveyorHero3D: React.FC<ConveyorHero3DProps> = ({
       }
     }
 
-    // B. Lower-Left / Foreground Stacks
+    // B. Lower-Left / Foreground Stacks (Kept low to avoid camera blocking)
     for (let col = -16; col <= 6; col += 1.62) {
       for (let row = -2; row <= 18; row += 1.62) {
         const distFromConveyor = (col + row);
-        if (distFromConveyor > -1.8) continue; // Keep conveyor channel clear
+        if (distFromConveyor > -3.2) continue; // Generous clearance for the conveyor belt
 
-        const stackHeight = (row > 6 || col < -4) ? 2 : 1;
+        const stackHeight = (row > 8 || col < -6) ? 2 : 1;
         for (let h = 0; h < stackHeight; h++) {
           const bw = 1.48;
           const bh = 1.22;
