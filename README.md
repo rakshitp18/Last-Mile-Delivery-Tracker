@@ -1,145 +1,172 @@
-# ⚡ Ship It — Intelligent Last-Mile Delivery Management Platform
-> *Smart Logistics. High-Speed Fleet Tracking. Seamless Delivery.*
+<div align="center">
 
-[![GitHub Repository](https://img.shields.io/badge/GitHub-rakshitp18%2FLast--Mile--Delivery--Tracker-181717?style=flat&logo=github)](https://github.com/rakshitp18/Last-Mile-Delivery-Tracker)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.4-6DB33F?style=flat&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
-[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-8+-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-4169E1?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+# 📦 Ship It — Enterprise Last-Mile Delivery & Dispatch Platform
 
-**Ship It** is a production-ready, full-stack logistics and last-mile delivery management platform engineered for modern e-commerce and supply chains. It features deterministic volumetric pricing calculation, automated proximity driver pairing, real-time GPS telemetry, customer self-service rescheduling, and dedicated operational cockpits for Customers, Fleet Drivers, and Operations Admins.
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Frontend_Live-black?style=for-the-badge&logo=vercel&logoColor=white)](https://last-mile-delivery-tracker-9t8c.vercel.app)
+[![Render Deployment](https://img.shields.io/badge/Render-Backend_Live-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://shipit-sl8q.onrender.com)
+[![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16.0-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Spring Boot 3.3.4](https://img.shields.io/badge/Spring_Boot-3.3.4-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![React 19](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
----
+**A high-performance last-mile logistics orchestration platform featuring deterministic volumetric rate calculations, real-time GPS telemetry radar, automated proximity-based driver pairing, and multi-tenant operations.**
 
-## ✨ Key Features
-
-- 📦 **Dynamic Volumetric Pricing Engine**: Automated billable weight calculation using industry-standard volumetric formulas ($\text{billable} = \max(\text{actual}, \frac{L \times B \times H}{5000})$) and automatic Intra-Zone vs. Inter-Zone rate card slab detection.
-- 🎯 **Smart Proximity Auto-Assignment**: Intelligent algorithm balancing driver workload quotas, preferred regional zone clusters, and GPS Haversine distance.
-- 🛰️ **Live Shipment Telemetry**: Real-time package tracking with interactive status timeline, driver location, and immutable audit event logs.
-- 🔄 **Failed Delivery Recovery**: Multi-attempt tracking with self-service customer rescheduling portal and automatic dispatcher reassignment.
-- 👥 **Role-Based Portals (RBAC)**:
-  - **Customer Portal**: Multi-step shipment booking, rate estimator, live map radar, and order management.
-  - **Delivery Agent Cockpit**: Mobile-first touch interface for milestone updates (`PICKED_UP` $\rightarrow$ `IN_TRANSIT` $\rightarrow$ `OUT_FOR_DELIVERY` $\rightarrow$ `DELIVERED`), duty toggle, and failure logging.
-  - **Operations Admin Dashboard**: Master dispatch oversight, rate card configuration, zone mapping, fleet analytics, and email notification monitors.
-- 🔐 **Enterprise Authentication**: Stateless JWT security, BCrypt password hashing, and Google OAuth 2.0 integration.
-- 💳 **Online Payments**: Integrated Razorpay checkout workflow for seamless digital payments.
+[🌐 Live Web Application](https://last-mile-delivery-tracker-9t8c.vercel.app) • [🔌 Live REST API](https://shipit-sl8q.onrender.com/api/health) • [📖 Architecture Document](DESIGN.md)
 
 ---
 
-## 🏗️ Technology Stack
+</div>
 
-| Layer | Technology |
+## 📸 Platform Showcase
+
+### 1. Interactive Landing Page & 3D Logistics Hero
+> Modern SaaS landing interface with integrated 3D conveyor belt mechanics and immediate booking CTAs.
+
+![Ship It Landing Hero](docs/screenshots/01_hero_landing.png)
+
+---
+
+### 2. Real-Time Parcel Radar & Telemetry Cockpit
+> Sub-second tracking with live driver coordinates, corridor milestone progress, and automated ETA countdowns.
+
+![Live Telemetry Radar](docs/screenshots/02_live_radar_tracking.png)
+
+---
+
+### 3. Dynamic Volumetric Rate Calculator
+> Instant billable weight computation using standard dimensional freight formulas (`(L × B × H) / 5000`) with real-time price estimation across delivery zones.
+
+![Volumetric Rate Calculator](docs/screenshots/03_rate_calculator.png)
+
+---
+
+### 4. Multi-Modal Fleet & Corridor Services
+> Horizontally scrollable fleet showcase spanning Inter-City Express, Urban Hyperlocal, Heavy B2B Freight, and EV clean fleets.
+
+![Fleet and Services](docs/screenshots/04_fleet_services.png)
+
+---
+
+### 5. Role-Based Operations Control Center
+> Centralized dispatch hub for fleet assignment, booking pipelines, real-time revenue metrics, and order recovery management.
+
+![Enterprise Operations Cockpit](docs/screenshots/06_enterprise_dashboard.png)
+
+---
+
+## 🌟 Key Platform Features
+
+- 🏎️ **Deterministic Volumetric Rating**: Computes billable freight weight as `max(Dead Weight, (L × B × H) / 5000)` with customizable base rates, distance tiers, and COD handling fees.
+- 📡 **Real-Time GPS Telemetry & STOMP WebSockets**: Instant driver location streaming over WebSockets with live Leaflet map rendering and milestone status transitions.
+- 🤖 **Automated Driver Dispatching**: Nearest-available delivery agent pairing based on operational zones and driver vehicle capacities.
+- 🔐 **Dual Authentication & Security**: Stateless JWT authentication with BCrypt hashing and Google OAuth 2.0 Identity Services.
+- 💳 **Razorpay Payment Integration**: Integrated test and live payment checkout with instant webhook verification.
+- 📧 **Multi-Channel Email Notifications**: Transactional booking confirmations, dispatch alerts, OTP delivery verification, and rescheduling receipts via Gmail SMTP and Resend API.
+- 📱 **Progressive Web App (PWA)**: Mobile-optimized experience with service workers, offline manifest caching, and native responsive design.
+
+---
+
+## 🏗️ System Architecture
+
+```mermaid
+graph TD
+    Client[React 19 + Vite SPA<br/>Hosted on Vercel] -->|HTTPS REST / JSON| Backend[Spring Boot 3.3.4 Cluster<br/>Hosted on Render]
+    Client -->|WSS STOMP WebSockets| Backend
+    Backend -->|HikariCP / TLS| DB[(Render PostgreSQL 16<br/>shipit_1dix)]
+    Backend -->|OAuth2 Token Verify| Google[Google Identity Services]
+    Backend -->|Orders & Webhooks| Razorpay[Razorpay Payment Gateway]
+    Backend -->|SMTP / REST API| Email[Gmail SMTP & Resend API]
+```
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technologies & Libraries |
 | :--- | :--- |
-| **Backend** | Spring Boot 3.3.4, Java 21, Spring Security (JWT), Spring Data JPA, Hibernate |
-| **Frontend** | React 19, TypeScript, Vite 8, Tailwind CSS, Lucide Icons, Recharts, Leaflet |
-| **State Management** | TanStack Query v5, Context API, React Hook Form + Zod |
-| **Databases** | PostgreSQL 15+ (Production) / In-Memory H2 (Local zero-config development) |
-| **API Documentation** | OpenAPI 3.0 / Swagger UI |
+| **Frontend** | React 19, TypeScript, Vite, Tailwind CSS, Lucide Icons, Three.js, Leaflet, Recharts, TanStack Query |
+| **Backend** | Java 17, Spring Boot 3.3.4, Spring Security, Spring Data JPA, Spring WebSocket (STOMP), Hibernate |
+| **Database** | PostgreSQL 16 (Render Managed), HikariCP Connection Pool |
+| **Authentication** | JWT (JSON Web Tokens), Google OAuth 2.0, BCrypt |
+| **Third-Party APIs** | Razorpay (Payments), Gmail SMTP / Resend (Email), OpenStreetMap / Leaflet (Maps) |
+| **Hosting & Cloud** | Vercel (Frontend SPA), Render (Spring Boot Docker Web Service & Managed PostgreSQL) |
 
 ---
 
-## 📁 Project Structure
-
-```
-Last-Mile-Delivery-Tracker/
-├── backend/                         # Spring Boot 3 Java Application
-│   ├── src/main/java/com/gatiman/   # Controllers, Services, Entities, Repositories, Security
-│   ├── src/main/resources/          # application.yml & configuration
-│   └── pom.xml                      # Maven dependencies
-├── frontend/                        # React 19 + Vite Application
-│   ├── src/components/              # UI & Layout components
-│   ├── src/pages/                   # Customer, Agent, Admin, and Auth pages
-│   ├── src/context/                 # AuthContext & Session management
-│   ├── src/api/                     # Axios API service clients
-│   └── package.json                 # Frontend dependencies
-├── docker-compose.yml               # Multi-container orchestration
-└── README.md
-```
-
----
-
-## 🚀 Getting Started
+## 🚀 Quick Start Guide
 
 ### Prerequisites
-- **Java**: JDK 21+
-- **Maven**: 3.9+
-- **Node.js**: 20+ & npm
-- *(Optional)* PostgreSQL 15+ or Docker
+- Java 17+ & Maven 3.8+
+- Node.js 18+ & npm 9+
+- PostgreSQL 16 (or local Docker)
 
 ---
 
-### 1️⃣ Backend Setup (Spring Boot)
-
+### 1. Clone the Repository
 ```bash
-cd backend
-mvn spring-boot:run
+git clone https://github.com/rakshitp18/Last-Mile-Delivery-Tracker.git
+cd Last-Mile-Delivery-Tracker
 ```
 
-- **Backend API**: `http://localhost:8088/api`
-- **Swagger Documentation**: `http://localhost:8088/swagger-ui/index.html`
-- **H2 Database Console**: `http://localhost:8088/h2-console` *(JDBC URL: `jdbc:h2:mem:gatiman_db`)*
+---
+
+### 2. Run with Docker Compose (Fastest)
+```bash
+docker-compose up --build
+```
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:8088/api`
+- PostgreSQL: `localhost:5432`
 
 ---
 
-### 2️⃣ Frontend Setup (React + Vite)
+### 3. Run Manually (Local Development)
 
+#### Backend (Spring Boot):
+```bash
+cd backend
+./mvnw spring-boot:run
+```
+*(Runs on `http://localhost:8088` with embedded H2 in PostgreSQL compatibility mode).*
+
+#### Frontend (React + Vite):
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-
-- **Frontend Application**: `http://localhost:5173`
-
----
-
-## 🔑 Demo Access & Seed Accounts
-
-All demo accounts come pre-configured with password: `password123` *(or `Admin@123` / `Agent@123` / `Customer@123`)*.
-
-| Role | Email | Capabilities |
-| :--- | :--- | :--- |
-| **Operations Admin** | `admin@gmail.com` | Dispatch controls, zone clusters, rate cards, analytics |
-| **Delivery Driver** | `agent@gmail.com` | Mobile delivery runsheet, GPS telemetry, status updates |
-| **Customer** | `customer@gmail.com` | Create shipments, price estimator, track parcels, reschedule |
-
-*(Quick demo login buttons are available directly on the login page for one-click access).*
+*(Runs on `http://localhost:5173` with instant Vite hot module replacement).*
 
 ---
 
-## 🐳 Docker Deployment
+## 🔑 Demo Access Credentials
 
-Run the complete multi-service stack with Docker Compose:
-
-```bash
-docker-compose up --build
-```
-
----
-
-## 🧪 Automated Testing
-
-Execute backend unit and integration test suites:
-
-```bash
-cd backend
-mvn test
-```
+| Role | Email | Password | Permissions |
+| :--- | :--- | :--- | :--- |
+| **Operations Admin** | `admin@gatiman.com` | `admin` | Full dispatch console, fleet assignment, rate card configuration, system audit logs |
+| **Enterprise Customer** | `customer@gatiman.com` | `customer` | Booking creation, volumetric calculator, order history, live tracking |
+| **Delivery Driver** | `agent@gatiman.com` | `agent` | Active parcel acceptance, status updating, OTP-protected delivery confirmation |
 
 ---
 
-## 👤 Author
+## 📡 REST API Reference
 
-**Rakshit Pandey**
-- GitHub: [@rakshitp18](https://github.com/rakshitp18)
-- Repository: [https://github.com/rakshitp18/Last-Mile-Delivery-Tracker](https://github.com/rakshitp18/Last-Mile-Delivery-Tracker)
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/login` | Authenticate and obtain JWT token | ❌ Public |
+| `POST` | `/api/auth/google` | Google OAuth token exchange | ❌ Public |
+| `GET` | `/api/orders/track/{trackingNumber}` | Public parcel telemetry lookup | ❌ Public |
+| `POST` | `/api/orders` | Create shipment booking | ✅ Customer / Admin |
+| `GET` | `/api/orders/my-orders` | Fetch customer shipments | ✅ Customer |
+| `PATCH` | `/api/agent/orders/{id}/status` | Update delivery state & coordinates | ✅ Delivery Driver |
+| `GET` | `/api/admin/dashboard/stats` | Aggregate operations KPIs | ✅ Admin |
+| `GET` | `/api/health` | Service health status check | ❌ Public |
 
 ---
 
-## 📄 License
+## 📄 License & Author
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Authored by **[Rakshit Pandey](https://github.com/rakshitp18)**.
 
-Copyright © 2026 **Rakshit Pandey**. All rights reserved.
+This project is licensed under the [MIT License](LICENSE) — see the LICENSE file for details.

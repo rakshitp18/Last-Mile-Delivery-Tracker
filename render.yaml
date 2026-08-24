@@ -13,11 +13,11 @@ services:
       - key: SPRING_PROFILES_ACTIVE
         value: postgres
       - key: DATABASE_URL
-        value: jdbc:postgresql://dpg-da6025u417fc738t0mtg-a:5432/gatiman_db
+        value: jdbc:postgresql://dpg-da68p2vqj5pc73eu21t0-a:5432/shipit_1dix
       - key: DATABASE_USERNAME
-        value: gatiman_user
+        value: shipit_1dix_user
       - key: DATABASE_PASSWORD
-        value: wHezuvYJQZ5jfU4AmRmd0Avq5WOk6CGu
+        value: AzgQ14t77qRWy3xV0kyBQhTaWcXXW9qT
       - key: DATABASE_DRIVER
         value: org.postgresql.Driver
       - key: JWT_SECRET
@@ -35,7 +35,7 @@ services:
       - key: EMAIL_FROM
         value: mili241105@gmail.com
       - key: EMAIL_FROM_NAME
-        value: GATIMAN Logistics
+        value: Ship It Logistics
       - key: RAZORPAY_KEY_ID
         value: rzp_test_TTNaA35CVbi6kG
       - key: RAZORPAY_KEY_SECRET
@@ -56,9 +56,9 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        value: https://gatiman-backend.onrender.com/api
+        value: https://shipit-sl8q.onrender.com/api
       - key: VITE_WS_URL
-        value: https://gatiman-backend.onrender.com/ws
+        value: wss://shipit-sl8q.onrender.com/ws
       - key: VITE_GOOGLE_CLIENT_ID
         value: 631552883561-r8m66tevmlmtn07ice0g4oq7jidflcov.apps.googleusercontent.com
       - key: VITE_RAZORPAY_KEY_ID

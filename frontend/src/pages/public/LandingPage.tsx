@@ -10,7 +10,7 @@ import {
   Navigation, CheckCircle2, UserCheck, RefreshCw,
   MapPin, Clock, Package, ShieldCheck, User,
   Calculator, Cpu, Sparkles, ExternalLink, Check,
-  HelpCircle, ChevronDown, ChevronRight, Zap, Shield, ArrowUpRight
+  HelpCircle, ChevronDown, ChevronRight, ChevronLeft, Zap, Shield, ArrowUpRight
 } from 'lucide-react';
 
 const deliverySteps: { status: OrderStatus; label: string; icon: React.ElementType }[] = [
@@ -38,7 +38,17 @@ export const LandingPage: React.FC = () => {
   const [previewLiveTracking, setPreviewLiveTracking] = useState<LiveTrackingData | null>(null);
   const [trackingTimeline, setTrackingTimeline] = useState<TrackingEvent[]>([]);
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
-  const [activeServiceTab, setActiveServiceTab] = useState(0);
+  const servicesScrollRef = React.useRef<HTMLDivElement | null>(null);
+
+  const scrollServices = (direction: 'left' | 'right') => {
+    if (servicesScrollRef.current) {
+      const scrollAmount = 440;
+      servicesScrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   // Volumetric Rate Calculator interactive state
   const [calcLength, setCalcLength] = useState<number>(30);
@@ -190,6 +200,24 @@ export const LandingPage: React.FC = () => {
       type: 'High-Torque Cargo EV Scooters',
       badgeColor: 'bg-teal-50 text-teal-700 border-teal-200',
     },
+    {
+      title: 'Priority Air Cargo Next-Flight-Out',
+      tag: 'Aviation Express',
+      image: '/images/service_air_cargo.jpg',
+      desc: 'Guaranteed space-booked domestic air cargo connecting major Tier-1 metros with airport-to-doorstep direct courier courier routing.',
+      sla: 'Next-Flight / 12 Hours',
+      type: 'Air Freight Charter',
+      badgeColor: 'bg-sky-50 text-sky-700 border-sky-200',
+    },
+    {
+      title: 'Containerised Hub-to-Hub Linehaul',
+      tag: 'Heavy Linehaul',
+      image: '/images/service_truck_fleet.jpg',
+      desc: 'GPS-monitored high-capacity sealed container trucks operating between sorting hubs on dedicated schedule windows.',
+      sla: 'Overnight Transit',
+      type: '24ft / 32ft Multi-Axle Container',
+      badgeColor: 'bg-purple-50 text-purple-700 border-purple-200',
+    },
   ];
 
   const faqs = [
@@ -219,14 +247,14 @@ export const LandingPage: React.FC = () => {
     <div className="relative min-h-screen bg-slate-50/80 text-slate-900 font-sans selection:bg-brand-500 selection:text-white antialiased overflow-x-hidden">
       
       {/* ─────────────────────────────────────────────────────────────────────────────
-          FULL-SCREEN 3D CONVEYOR BELT ANIMATION (Spacious Center-Right Staging)
+          FULL-SCREEN 3D CONVEYOR BELT ANIMATION (Right-Biased Staging)
       ───────────────────────────────────────────────────────────────────────────── */}
-      <div className="fixed top-0 right-0 bottom-0 w-full sm:w-4/5 lg:w-[66%] pointer-events-none overflow-hidden z-0">
+      <div className="fixed top-0 right-0 bottom-0 w-full sm:w-[75%] lg:w-[60%] pointer-events-none overflow-hidden z-0">
         {/* Full Bleed 3D Canvas */}
         <ConveyorHero3D className="absolute inset-0 w-full h-full" showOverlay={false} />
         
         {/* Subtle left-side feather to seamlessly blend with white background */}
-        <div className="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-slate-50 to-transparent pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 w-36 bg-gradient-to-r from-slate-50 to-transparent pointer-events-none" />
       </div>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
@@ -835,10 +863,10 @@ export const LandingPage: React.FC = () => {
         </section>
 
         {/* ─────────────────────────────────────────────────────────────────────────────
-            5. FLEET & SERVICES SHOWCASE (Light Theme)
+            5. FLEET & SERVICES SCROLLABLE SHOWCASE (Light Theme)
         ───────────────────────────────────────────────────────────────────────────── */}
         <section id="services" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
             <div className="space-y-3">
               <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white border border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-700 shadow-xs">
                 <Truck className="w-3.5 h-3.5 text-brand-600" />
@@ -849,70 +877,84 @@ export const LandingPage: React.FC = () => {
               </h2>
             </div>
 
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0">
-              {services.map((s, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setActiveServiceTab(idx)}
-                  className={`px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
-                    activeServiceTab === idx
-                      ? 'bg-slate-900 text-white shadow-md'
-                      : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
-                  }`}
-                >
-                  {s.tag}
-                </button>
-              ))}
+            {/* Scroll Navigation Buttons */}
+            <div className="flex items-center gap-2 self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={() => scrollServices('left')}
+                className="w-10 h-10 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-slate-900 hover:text-white hover:border-slate-900 flex items-center justify-center transition shadow-xs cursor-pointer"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollServices('right')}
+                className="w-10 h-10 rounded-full bg-slate-900 border border-slate-900 text-white hover:bg-brand-600 hover:border-brand-600 flex items-center justify-center transition shadow-md cursor-pointer"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
             </div>
           </div>
 
-          {/* Highlighted Service Card */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center rounded-[2.5rem] bg-white/95 backdrop-blur-xl border border-slate-200/90 p-6 sm:p-10 shadow-2xl shadow-slate-900/5">
-            <div className="lg:col-span-6 relative h-64 sm:h-80 rounded-3xl overflow-hidden border border-slate-200 shadow-inner">
-              <img
-                src={services[activeServiceTab].image}
-                alt={services[activeServiceTab].title}
-                className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
-              <div className="absolute bottom-4 left-4">
-                <span className={`px-3 py-1 rounded-full text-xs font-bold border ${services[activeServiceTab].badgeColor}`}>
-                  {services[activeServiceTab].tag}
-                </span>
-              </div>
-            </div>
+          {/* Horizontally Scrollable Cards Row */}
+          <div
+            ref={servicesScrollRef}
+            className="flex items-stretch gap-6 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {services.map((srv, idx) => (
+              <div
+                key={idx}
+                className="w-[85vw] sm:w-[380px] lg:w-[420px] flex-shrink-0 snap-start flex flex-col justify-between rounded-[2.5rem] bg-white/95 backdrop-blur-xl border border-slate-200/90 p-6 sm:p-7 shadow-xl shadow-slate-900/5 hover:shadow-2xl hover:border-brand-300 transition-all duration-300 group"
+              >
+                <div>
+                  <div className="relative h-52 rounded-2xl overflow-hidden border border-slate-200 shadow-inner mb-5">
+                    <img
+                      src={srv.image}
+                      alt={srv.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
+                    <div className="absolute bottom-3.5 left-3.5">
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold border ${srv.badgeColor}`}>
+                        {srv.tag}
+                      </span>
+                    </div>
+                  </div>
 
-            <div className="lg:col-span-6 space-y-6">
-              <h3 className="text-2xl sm:text-3xl font-heading font-black text-slate-950 tracking-tight">
-                {services[activeServiceTab].title}
-              </h3>
+                  <h3 className="text-xl font-heading font-black text-slate-950 tracking-tight mb-2">
+                    {srv.title}
+                  </h3>
 
-              <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-                {services[activeServiceTab].desc}
-              </p>
-
-              <div className="grid grid-cols-2 gap-4 text-xs">
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs">
-                  <span className="text-slate-500 block text-[11px] font-semibold">Guaranteed SLA</span>
-                  <span className="text-base font-bold text-slate-900 mt-1 block">{services[activeServiceTab].sla}</span>
+                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed mb-6">
+                    {srv.desc}
+                  </p>
                 </div>
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs">
-                  <span className="text-slate-500 block text-[11px] font-semibold">Vehicle Assignment</span>
-                  <span className="text-base font-bold text-brand-600 mt-1 block">{services[activeServiceTab].type}</span>
+
+                <div className="space-y-4 pt-4 border-t border-slate-100">
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                      <span className="text-slate-500 block text-[10px] font-semibold uppercase">Guaranteed SLA</span>
+                      <span className="text-xs font-bold text-slate-900 mt-0.5 block truncate">{srv.sla}</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                      <span className="text-slate-500 block text-[10px] font-semibold uppercase">Vehicle Fleet</span>
+                      <span className="text-xs font-bold text-brand-600 mt-0.5 block truncate">{srv.type}</span>
+                    </div>
+                  </div>
+
+                  <Link
+                    to="/register/customer"
+                    className="w-full py-3.5 rounded-full bg-slate-900 hover:bg-brand-600 text-white font-bold text-xs transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <span>Dispatch with this Service</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
                 </div>
               </div>
-
-              <div className="pt-2">
-                <Link
-                  to="/register/customer"
-                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition shadow-md hover:scale-105 active:scale-95 cursor-pointer"
-                >
-                  <span>Dispatch with this Service</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 

@@ -28,8 +28,7 @@ export const GoogleSignInButton: React.FC<Props> = ({
   const [pinCodeInput, setPinCodeInput] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [gstNumber, setGstNumber] = useState('');
-
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '631552883561-r8m66tevmlmtn07ice0g4oq7jidflcov.apps.googleusercontent.com';
 
   const [tokenClient, setTokenClient] = useState<any>(null);
 

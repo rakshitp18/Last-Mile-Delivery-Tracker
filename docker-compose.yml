@@ -6,15 +6,15 @@ services:
     container_name: gatiman_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: gatiman_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: shipit_1dix
+      POSTGRES_USER: shipit_1dix_user
+      POSTGRES_PASSWORD: AzgQ14t77qRWy3xV0kyBQhTaWcXXW9qT
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d gatiman_db"]
+      test: ["CMD-SHELL", "pg_isready -U shipit_1dix_user -d shipit_1dix"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -23,16 +23,16 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: gatiman_backend
+    container_name: shipit_backend
     restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
     environment:
       PORT: 8088
-      DATABASE_URL: jdbc:postgresql://postgres:5432/gatiman_db
-      DATABASE_USERNAME: postgres
-      DATABASE_PASSWORD: password123
+      DATABASE_URL: jdbc:postgresql://postgres:5432/shipit_1dix
+      DATABASE_USERNAME: shipit_1dix_user
+      DATABASE_PASSWORD: AzgQ14t77qRWy3xV0kyBQhTaWcXXW9qT
       DATABASE_DRIVER: org.postgresql.Driver
       JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
     ports:

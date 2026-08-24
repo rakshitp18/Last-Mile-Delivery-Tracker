@@ -1,11 +1,11 @@
 spring:
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/gatiman_db}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/shipit_1dix}
     driverClassName: org.postgresql.Driver
     username: ${DATABASE_USERNAME:postgres}
     password: ${DATABASE_PASSWORD:password123}
     hikari:
-      pool-name: GatimanPostgresPool
+      pool-name: ShipItPostgresPool
       maximum-pool-size: 20
       minimum-idle: 5
       connection-timeout: 20000
@@ -18,7 +18,7 @@ spring:
     show-sql: false
 
 razorpay:
-  key-id: ${RAZORPAY_KEY_ID:rzp_test_gatiman123}
-  key-secret: ${RAZORPAY_KEY_SECRET:gatimanSecretKey123}
+  key-id: ${RAZORPAY_KEY_ID:rzp_test_TTNaA35CVbi6kG}
+  key-secret: ${RAZORPAY_KEY_SECRET:JYOxId2dBdxzrurDVrwsy1Ws}
   currency: INR
-  company-name: GATIMAN Logistics Inc.
+  company-name: Ship It Logistics Inc.

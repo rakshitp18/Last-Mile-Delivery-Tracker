@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const rawBase = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:8088/api';
+const defaultApiUrl = import.meta.env.PROD
+  ? 'https://shipit-sl8q.onrender.com/api'
+  : 'http://localhost:8088/api';
+
+const rawBase = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || defaultApiUrl;
 const BASE_URL = rawBase.endsWith('/api') ? rawBase : `${rawBase.replace(/\/$/, '')}/api`;
 
 export const apiClient = axios.create({

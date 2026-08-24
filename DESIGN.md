@@ -1,11 +1,11 @@
-# 📦 GATIMAN Logistics Platform — System Architecture & Technical Design Document
+# 📦 Ship It Logistics Platform — System Architecture & Technical Design Document
 
-> **Author**: GATIMAN Core Engineering  
+> **Author**: Rakshit Pandey  
 > **Version**: 2.0.0 (Production Release)  
-> **Repository**: [Milindverma24/Last_mile_tracker_vitb](https://github.com/Milindverma24/Last_mile_tracker_vitb)  
+> **Repository**: [rakshitp18/Last-Mile-Delivery-Tracker](https://github.com/rakshitp18/Last-Mile-Delivery-Tracker)  
 > **Production Endpoints**:
-> - **Backend API**: `https://last-mile-tracker-vitb.onrender.com`
-> - **Frontend Web App**: `https://frontend-ten-lyart-76.vercel.app`
+> - **Backend API**: `https://shipit-sl8q.onrender.com`
+> - **Frontend Web App**: `https://last-mile-delivery-tracker-9t8c.vercel.app`
 
 ---
 
