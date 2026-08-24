@@ -27,8 +27,14 @@ const getStepIndex = (status?: OrderStatus) => {
     CREATED: 0, ASSIGNED: 1, PICKED_UP: 2, IN_TRANSIT: 3,
     OUT_FOR_DELIVERY: 4, DELIVERED: 5, FAILED: 4, RESCHEDULED: 4,
   };
-  return status ? (map[status] ?? 0) : 0;
-};
+const navItems: { id: string; label: string; href: string; icon?: React.ElementType }[] = [
+  { id: 'home', label: 'Home', href: '#home' },
+  { id: 'tracking', label: 'Live Radar', href: '#tracking', icon: Radio },
+  { id: 'calculator', label: 'Rate Calculator', href: '#calculator', icon: Calculator },
+  { id: 'services', label: 'Fleet & Services', href: '#services' },
+  { id: 'features', label: 'Architecture', href: '#features' },
+  { id: 'faq', label: 'FAQ', href: '#faq' },
+];
 
 export const LandingPage: React.FC = () => {
   const [trackingInput, setTrackingInput] = useState('');
@@ -39,6 +45,58 @@ export const LandingPage: React.FC = () => {
   const [trackingTimeline, setTrackingTimeline] = useState<TrackingEvent[]>([]);
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
   const servicesScrollRef = React.useRef<HTMLDivElement | null>(null);
+
+  // Sliding red navbar active state & indicator bounds
+  const [activeNav, setActiveNav] = useState('home');
+  const [indicatorStyle, setIndicatorStyle] = useState<{ left: number; width: number; height: number }>({
+    left: 0,
+    width: 0,
+    height: 0,
+  });
+  const navContainerRef = React.useRef<HTMLElement | null>(null);
+  const navItemRefs = React.useRef<Map<string, HTMLAnchorElement>>(new Map());
+
+  const updateIndicator = React.useCallback((navId: string) => {
+    const el = navItemRefs.current.get(navId);
+    const container = navContainerRef.current;
+    if (el && container) {
+      const containerRect = container.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      setIndicatorStyle({
+        left: elRect.left - containerRect.left,
+        width: elRect.width,
+        height: elRect.height,
+      });
+    }
+  }, []);
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => updateIndicator(activeNav), 50);
+    const handleResize = () => updateIndicator(activeNav);
+    window.addEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(timeout);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [activeNav, updateIndicator]);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['home', 'tracking', 'calculator', 'services', 'features', 'faq'];
+      const scrollPos = window.scrollY + 220;
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sections[i]);
+        if (el && el.offsetTop <= scrollPos) {
+          setActiveNav(sections[i]);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const scrollServices = (direction: 'left' | 'right') => {
     if (servicesScrollRef.current) {
@@ -268,28 +326,60 @@ export const LandingPage: React.FC = () => {
             <GatimanLogo to="/" />
           </div>
 
-          {/* Center Navigation Links Capsule */}
-          <nav className="hidden lg:flex items-center gap-1 bg-white/90 backdrop-blur-xl px-3 py-1.5 rounded-full border border-slate-200/90 shadow-lg shadow-slate-900/5 text-xs font-semibold text-slate-600">
-            <a href="#home" className="px-3.5 py-1.5 rounded-full bg-slate-900 text-white font-bold transition shadow-xs">
-              Home
-            </a>
-            <a href="#tracking" className="px-3.5 py-1.5 rounded-full text-brand-600 hover:bg-brand-50 transition flex items-center gap-1.5 font-bold">
-              <Radio className="w-3.5 h-3.5 animate-pulse text-brand-500" />
-              <span>Live Radar</span>
-            </a>
-            <a href="#calculator" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-1">
-              <Calculator className="w-3.5 h-3.5 text-slate-500" />
-              <span>Rate Calculator</span>
-            </a>
-            <a href="#services" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-slate-100 transition">
-              Fleet &amp; Services
-            </a>
-            <a href="#features" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-slate-100 transition">
-              Architecture
-            </a>
-            <a href="#faq" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-slate-100 transition">
-              FAQ
-            </a>
+          {/* Center Navigation Links Capsule with Sliding Red Oval Pill */}
+          <nav
+            ref={navContainerRef}
+            className="relative hidden lg:flex items-center gap-1 bg-white/90 backdrop-blur-xl p-1.5 rounded-full border border-slate-200/90 shadow-lg shadow-slate-900/5 text-xs font-semibold text-slate-600"
+          >
+            {/* Sliding Red Oval Indicator */}
+            {indicatorStyle.width > 0 && (
+              <span
+                className="absolute rounded-full bg-gradient-to-r from-brand-600 via-red-600 to-rose-600 shadow-md shadow-brand-600/30 transition-all duration-300 ease-out pointer-events-none"
+                style={{
+                  left: `${indicatorStyle.left}px`,
+                  width: `${indicatorStyle.width}px`,
+                  height: `${indicatorStyle.height}px`,
+                  top: '6px',
+                }}
+              />
+            )}
+
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeNav === item.id;
+              return (
+                <a
+                  key={item.id}
+                  ref={(el) => {
+                    if (el) navItemRefs.current.set(item.id, el);
+                    else navItemRefs.current.delete(item.id);
+                  }}
+                  href={item.href}
+                  onClick={() => {
+                    setActiveNav(item.id);
+                    updateIndicator(item.id);
+                  }}
+                  className={`relative z-10 px-3.5 py-1.5 rounded-full transition-colors duration-200 flex items-center gap-1.5 cursor-pointer font-bold select-none ${
+                    isActive
+                      ? 'text-white'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {Icon && (
+                    <Icon
+                      className={`w-3.5 h-3.5 transition-colors duration-200 ${
+                        isActive
+                          ? 'text-white'
+                          : item.id === 'tracking'
+                          ? 'text-brand-500 animate-pulse'
+                          : 'text-slate-400'
+                      }`}
+                    />
+                  )}
+                  <span>{item.label}</span>
+                </a>
+              );
+            })}
           </nav>
 
           {/* Right Action Area */}
