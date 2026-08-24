@@ -28,6 +28,8 @@ const getStepIndex = (status?: OrderStatus) => {
     CREATED: 0, ASSIGNED: 1, PICKED_UP: 2, IN_TRANSIT: 3,
     OUT_FOR_DELIVERY: 4, DELIVERED: 5, FAILED: 4, RESCHEDULED: 4,
   };
+  return status ? (map[status] ?? 0) : 0;
+};
 const navItems: { id: string; label: string; href: string; icon?: React.ElementType }[] = [
   { id: 'home', label: 'Home', href: '#home' },
   { id: 'tracking', label: 'Live Radar', href: '#tracking', icon: Radio },
@@ -47,39 +49,8 @@ export const LandingPage: React.FC = () => {
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
   const servicesScrollRef = React.useRef<HTMLDivElement | null>(null);
 
-  // Sliding red navbar active state & indicator bounds
+  // Active section state for sliding spring red pill
   const [activeNav, setActiveNav] = useState('home');
-  const [indicatorStyle, setIndicatorStyle] = useState<{ left: number; width: number; height: number }>({
-    left: 0,
-    width: 0,
-    height: 0,
-  });
-  const navContainerRef = React.useRef<HTMLElement | null>(null);
-  const navItemRefs = React.useRef<Map<string, HTMLAnchorElement>>(new Map());
-
-  const updateIndicator = React.useCallback((navId: string) => {
-    const el = navItemRefs.current.get(navId);
-    const container = navContainerRef.current;
-    if (el && container) {
-      const containerRect = container.getBoundingClientRect();
-      const elRect = el.getBoundingClientRect();
-      setIndicatorStyle({
-        left: elRect.left - containerRect.left,
-        width: elRect.width,
-        height: elRect.height,
-      });
-    }
-  }, []);
-
-  React.useEffect(() => {
-    const timeout = setTimeout(() => updateIndicator(activeNav), 50);
-    const handleResize = () => updateIndicator(activeNav);
-    window.addEventListener('resize', handleResize);
-    return () => {
-      clearTimeout(timeout);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [activeNav, updateIndicator]);
 
   React.useEffect(() => {
     const handleScroll = () => {
