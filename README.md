@@ -1,7 +1,7 @@
-# ⚡ GATIMAN — Intelligent Last-Mile Delivery Management Platform
-> **“गति से गंतव्य तक”** • *Smart Logistics. Seamless Delivery.*
+# ⚡ Ship It — Intelligent Last-Mile Delivery Management Platform
+> *Smart Logistics. High-Speed Fleet Tracking. Seamless Delivery.*
 
-[![GitHub Repository](https://img.shields.io/badge/GitHub-Milindverma24%2FLast__mile__tracker__vitb-181717?style=flat&logo=github)](https://github.com/Milindverma24/Last_mile_tracker_vitb)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-rakshitp18%2FLast--Mile--Delivery--Tracker-181717?style=flat&logo=github)](https://github.com/rakshitp18/Last-Mile-Delivery-Tracker)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.4-6DB33F?style=flat&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev/)
@@ -9,202 +9,137 @@
 [![Vite](https://img.shields.io/badge/Vite-8+-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-4169E1?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 
-A production-grade, full-stack logistics management platform built for modern supply chains. GATIMAN features deterministic volumetric pricing (`(L × B × H) / 5000`), intelligent proximity auto-assignment, multi-attempt failed delivery recovery with customer rescheduling, append-only immutable tracking event audit logs, and distinct operational cockpits for **Customers**, **Delivery Agents**, and **Operations Admins**.
+**Ship It** is a production-ready, full-stack logistics and last-mile delivery management platform engineered for modern e-commerce and supply chains. It features deterministic volumetric pricing calculation, automated proximity driver pairing, real-time GPS telemetry, customer self-service rescheduling, and dedicated operational cockpits for Customers, Fleet Drivers, and Operations Admins.
 
 ---
 
-## 🏗️ Architecture & Technology Stack
+## ✨ Key Features
 
-### Backend
-* **Runtime**: Java 21 / 23+
-* **Framework**: Spring Boot 3.3.4 (Spring Web, Spring Security, Spring Data JPA, Bean Validation)
-* **Authentication**: Stateless JWT (`io.jsonwebtoken:jjwt-api:0.12.6`), BCrypt hashing, Role-Based Access Control (RBAC)
-* **Database**: PostgreSQL (`gatiman_db`) with in-memory H2 PostgreSQL-compatible fallback for zero-config local prototyping
-* **API Documentation**: OpenAPI 3.0 via SpringDoc (`springdoc-openapi-starter-webmvc-ui:2.6.0`)
-* **Logging**: Structured SLF4J audit logging
-
-### Frontend
-* **Core**: React 19 + TypeScript strictly typed
-* **Build Tool**: Vite 8+
-* **Routing**: React Router 7+ (`ProtectedRoute`, `RoleRoute`, nested role layouts)
-* **Styling**: Tailwind CSS, custom SaaS design system, responsive card/table transitions
-* **Server State**: TanStack Query v5 (`@tanstack/react-query`) with automatic cache invalidation
-* **Forms & Validation**: React Hook Form + Zod (`@hookform/resolvers/zod`)
-* **Icons & Visualization**: Lucide React + Recharts
+- 📦 **Dynamic Volumetric Pricing Engine**: Automated billable weight calculation using industry-standard volumetric formulas ($\text{billable} = \max(\text{actual}, \frac{L \times B \times H}{5000})$) and automatic Intra-Zone vs. Inter-Zone rate card slab detection.
+- 🎯 **Smart Proximity Auto-Assignment**: Intelligent algorithm balancing driver workload quotas, preferred regional zone clusters, and GPS Haversine distance.
+- 🛰️ **Live Shipment Telemetry**: Real-time package tracking with interactive status timeline, driver location, and immutable audit event logs.
+- 🔄 **Failed Delivery Recovery**: Multi-attempt tracking with self-service customer rescheduling portal and automatic dispatcher reassignment.
+- 👥 **Role-Based Portals (RBAC)**:
+  - **Customer Portal**: Multi-step shipment booking, rate estimator, live map radar, and order management.
+  - **Delivery Agent Cockpit**: Mobile-first touch interface for milestone updates (`PICKED_UP` $\rightarrow$ `IN_TRANSIT` $\rightarrow$ `OUT_FOR_DELIVERY` $\rightarrow$ `DELIVERED`), duty toggle, and failure logging.
+  - **Operations Admin Dashboard**: Master dispatch oversight, rate card configuration, zone mapping, fleet analytics, and email notification monitors.
+- 🔐 **Enterprise Authentication**: Stateless JWT security, BCrypt password hashing, and Google OAuth 2.0 integration.
+- 💳 **Online Payments**: Integrated Razorpay checkout workflow for seamless digital payments.
 
 ---
 
-## 📁 Repository Structure
+## 🏗️ Technology Stack
+
+| Layer | Technology |
+| :--- | :--- |
+| **Backend** | Spring Boot 3.3.4, Java 21, Spring Security (JWT), Spring Data JPA, Hibernate |
+| **Frontend** | React 19, TypeScript, Vite 8, Tailwind CSS, Lucide Icons, Recharts, Leaflet |
+| **State Management** | TanStack Query v5, Context API, React Hook Form + Zod |
+| **Databases** | PostgreSQL 15+ (Production) / In-Memory H2 (Local zero-config development) |
+| **API Documentation** | OpenAPI 3.0 / Swagger UI |
+
+---
+
+## 📁 Project Structure
 
 ```
-last_mile_delivery/
-├── backend/
-│   ├── Dockerfile
-│   ├── pom.xml
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/gatiman/
-│   │   │   │   ├── config/              # SecurityConfig, CorsConfig, OpenApiConfig
-│   │   │   │   ├── controller/          # Health, Auth, Order, Agent, Zone, RateCard, Admin
-│   │   │   │   ├── dto/
-│   │   │   │   │   ├── common/          # ApiResponse, ErrorResponse, HealthResponse
-│   │   │   │   │   ├── auth/            # LoginRequest, RegisterRequest, AuthResponse
-│   │   │   │   │   ├── order/           # CreateOrder, ChargeCalc, StatusUpdate, Reschedule
-│   │   │   │   │   ├── agent/           # AgentResponse, AssignmentResponse, Availability
-│   │   │   │   │   ├── zone/            # ZoneRequest, AreaRequest, ZoneResponse
-│   │   │   │   │   ├── ratecard/        # RateCardRequest, RateCardRuleDto
-│   │   │   │   │   └── admin/           # DashboardResponse
-│   │   │   │   ├── entity/              # User, Customer, Agent, Zone, Area, RateCard, Order, etc.
-│   │   │   │   ├── enums/               # Role, OrderStatus, CustomerType, PaymentType, RouteType
-│   │   │   │   ├── exception/           # GlobalExceptionHandler, ResourceNotFound, BusinessRule
-│   │   │   │   ├── repository/          # Spring Data JPA Repositories
-│   │   │   │   ├── security/            # JwtTokenProvider, CustomUserDetails, JwtFilter
-│   │   │   │   ├── service/             # Service interfaces
-│   │   │   │   │   └── impl/            # Business logic implementations
-│   │   │   │   └── util/                # SeedDataLoader (Auto-provisions demo network)
-│   │   │   │   └── GatimanApplication.java
-│   │   │   └── resources/
-│   │   │       ├── application.yml
-│   │   │       └── application-postgres.yml
-│   │   └── test/java/com/gatiman/       # Unit tests (Auth, Order, Zone, RateCard, Assignment, Tracking)
-│
-├── frontend/
-│   ├── Dockerfile
-│   ├── nginx.conf
-│   ├── package.json
-│   ├── public/
-│   │   └── logo.png                     # Official GATIMAN speed delivery logo
-│   └── src/
-│       ├── api/                         # Centralized Axios client & dedicated API modules
-│       ├── components/                  # UI, Common, Layout components
-│       ├── context/                     # AuthContext (JWT session state)
-│       ├── hooks/                       # TanStack Query custom hooks (useOrders, useZones, etc.)
-│       ├── layouts/                     # AuthLayout, CustomerLayout, AgentLayout, AdminLayout
-│       ├── pages/
-│       │   ├── auth/                    # LoginPage, RegisterPage
-│       │   ├── customer/                # Dashboard, CreateOrder, Orders, Track, Reschedule, Profile
-│       │   ├── agent/                   # Dashboard, Deliveries, History, Profile
-│       │   └── admin/                   # Dashboard, Orders Dispatch, Zones, RateCards, Agents, Analytics
-│       ├── routes/                      # AppRoutes, ProtectedRoute, RoleRoute
-│       ├── schemas/                     # Zod validation schemas
-│       ├── types/                       # Strict TypeScript interfaces
-│       ├── App.tsx
-│       └── main.tsx
-│
-├── docker-compose.yml                   # Multi-container orchestration (postgres, backend, frontend)
-├── LICENSE                              # MIT License
+Last-Mile-Delivery-Tracker/
+├── backend/                         # Spring Boot 3 Java Application
+│   ├── src/main/java/com/gatiman/   # Controllers, Services, Entities, Repositories, Security
+│   ├── src/main/resources/          # application.yml & configuration
+│   └── pom.xml                      # Maven dependencies
+├── frontend/                        # React 19 + Vite Application
+│   ├── src/components/              # UI & Layout components
+│   ├── src/pages/                   # Customer, Agent, Admin, and Auth pages
+│   ├── src/context/                 # AuthContext & Session management
+│   ├── src/api/                     # Axios API service clients
+│   └── package.json                 # Frontend dependencies
+├── docker-compose.yml               # Multi-container orchestration
 └── README.md
 ```
 
 ---
 
-## 🔑 Demo Credentials & Personas
-
-All accounts are pre-seeded on application startup with the development password: `password123`.
-
-| Portal | Email | Password | Role & Capabilities |
-| :--- | :--- | :--- | :--- |
-| **Operations Admin** | `admin@gatiman.local` | `password123` | Master dispatch console, auto-assignment engine, zone cluster configuration, dynamic rate card rules, KPI analytics |
-| **Delivery Agent** | `agent1@gatiman.local` | `password123` | Touch-friendly status progression (`PICKED_UP` $\rightarrow$ `IN_TRANSIT` $\rightarrow$ `OUT_FOR_DELIVERY` $\rightarrow$ `DELIVERED`/`FAILED`), on/off duty toggle, failure reason logger |
-| **Delivery Agent #2** | `agent2@gatiman.local` | `password123` | Secondary fleet driver in North Delhi hub |
-| **Customer** | `customer@gatiman.local` | `password123` | 6-Step booking wizard, instant volumetric charge calculation, live immutable tracking timeline, failed delivery rescheduling hub |
-
-*(Aliases `admin@gatiman.com`, `customer@gatiman.com`, and `rajesh.agent@gatiman.com` are also supported).*
-
----
-
-## 🚀 Running Locally
+## 🚀 Getting Started
 
 ### Prerequisites
-* JDK 21+ and Apache Maven 3.9+
-* Node.js 20+ and npm
-* (Optional) PostgreSQL 15+ or Docker
+- **Java**: JDK 21+
+- **Maven**: 3.9+
+- **Node.js**: 20+ & npm
+- *(Optional)* PostgreSQL 15+ or Docker
 
 ---
 
-### Step 1: Start PostgreSQL (Optional — H2 is pre-configured by default)
-To use native PostgreSQL:
-```bash
-createdb gatiman_db
-```
-Configure environment variables in your terminal or backend `application-postgres.yml`:
-```bash
-export DATABASE_URL=jdbc:postgresql://localhost:5432/gatiman_db
-export DATABASE_USERNAME=postgres
-export DATABASE_PASSWORD=postgres
-```
+### 1️⃣ Backend Setup (Spring Boot)
 
----
-
-### Step 2: Start Spring Boot Backend (Port 8088)
 ```bash
 cd backend
 mvn spring-boot:run
 ```
-The backend initializes the database and seeds initial zones, rate cards, drivers, and sample shipments.
-* **API Base URL**: `http://localhost:8088/api`
-* **Health Check**: `http://localhost:8088/api/health`
-* **Swagger 3.0 API Docs**: `http://localhost:8088/swagger-ui/index.html`
-* **H2 Console Browser**: `http://localhost:8088/h2-console`
+
+- **Backend API**: `http://localhost:8088/api`
+- **Swagger Documentation**: `http://localhost:8088/swagger-ui/index.html`
+- **H2 Database Console**: `http://localhost:8088/h2-console` *(JDBC URL: `jdbc:h2:mem:gatiman_db`)*
 
 ---
 
-### Step 3: Start React Frontend (Port 5174 / 5173)
+### 2️⃣ Frontend Setup (React + Vite)
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-Open [http://localhost:5174/](http://localhost:5174/) in your browser.
+
+- **Frontend Application**: `http://localhost:5173`
 
 ---
 
-## 🐳 Running with Docker Compose
+## 🔑 Demo Access & Seed Accounts
 
-To launch the complete infrastructure (PostgreSQL + Spring Boot Backend + Nginx React Frontend):
+All demo accounts come pre-configured with password: `password123` *(or `Admin@123` / `Agent@123` / `Customer@123`)*.
+
+| Role | Email | Capabilities |
+| :--- | :--- | :--- |
+| **Operations Admin** | `admin@gmail.com` | Dispatch controls, zone clusters, rate cards, analytics |
+| **Delivery Driver** | `agent@gmail.com` | Mobile delivery runsheet, GPS telemetry, status updates |
+| **Customer** | `customer@gmail.com` | Create shipments, price estimator, track parcels, reschedule |
+
+*(Quick demo login buttons are available directly on the login page for one-click access).*
+
+---
+
+## 🐳 Docker Deployment
+
+Run the complete multi-service stack with Docker Compose:
 
 ```bash
 docker-compose up --build
 ```
-* **Frontend**: [http://localhost:5174](http://localhost:5174)
-* **Backend API**: [http://localhost:8088/api](http://localhost:8088/api)
-* **PostgreSQL**: `localhost:5432` (`gatiman_db`)
-
----
-
-## 📐 Business Logic & Engineering Specifications
-
-### 1. Volumetric Weight Calculation Formula
-$$\text{Volumetric Weight (kg)} = \frac{\text{Length (cm)} \times \text{Breadth (cm)} \times \text{Height (cm)}}{5000}$$
-$$\text{Billable Weight (kg)} = \max(\text{Actual Weight}, \text{Volumetric Weight})$$
-
-### 2. Rate Card Slabs
-* **Intra-Zone vs. Inter-Zone**: Detected automatically based on pickup vs. drop PIN code mapping.
-* **B2B vs. B2C Slabs**: Base weight allowance (2kg for B2C, 5kg for B2B) + incremental rate per kg above minimum.
-* **COD Surcharge**: `Flat COD Surcharge + (% Surcharge × Base Price)`.
-
-### 3. Finite State Machine Lifecycle
-$$\text{CREATED} \longrightarrow \text{ASSIGNED} \longrightarrow \text{PICKED\_UP} \longrightarrow \text{IN\_TRANSIT} \longrightarrow \text{OUT\_FOR\_DELIVERY} \longrightarrow \begin{cases} \text{DELIVERED} \\ \text{FAILED} \longrightarrow \text{RESCHEDULED} \longrightarrow \text{ASSIGNED} \end{cases}$$
-
-### 4. Smart Proximity Auto-Assignment
-Balances:
-1. Active Driver Workload (Must be $< \text{Max Capacity}$ quota).
-2. Preferred Regional Zone Match.
-3. Haversine GPS Distance between agent coordinates and pickup location.
 
 ---
 
 ## 🧪 Automated Testing
-Run backend unit test suite:
+
+Execute backend unit and integration test suites:
+
 ```bash
 cd backend
-mvn clean test
+mvn test
 ```
-**Results**: 13/13 unit tests passing (`AuthServiceTest`, `OrderServiceTest`, `ZoneServiceTest`, `RateCardServiceTest`, `AgentAssignmentServiceTest`, `TrackingServiceTest`).
+
+---
+
+## 👤 Author
+
+**Rakshit Pandey**
+- GitHub: [@rakshitp18](https://github.com/rakshitp18)
+- Repository: [https://github.com/rakshitp18/Last-Mile-Delivery-Tracker](https://github.com/rakshitp18/Last-Mile-Delivery-Tracker)
 
 ---
 
 ## 📄 License
+
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Copyright © 2026 [Milind Verma](https://github.com/Milindverma24). All rights reserved.
+Copyright © 2026 **Rakshit Pandey**. All rights reserved.
