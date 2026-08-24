@@ -1,17 +1,16 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { orderApi } from '../../api/orderApi';
 import { trackingApi, LiveTrackingData } from '../../api/trackingApi';
 import { Order, TrackingEvent, OrderStatus } from '../../types';
-import { GatimanLogo, ScooterIcon } from '../../components/common/GatimanLogo';
+import { GatimanLogo } from '../../components/common/GatimanLogo';
 import { ConveyorHero3D } from '../../components/common/ConveyorHero3D';
 import {
-  Truck, Search, ArrowRight, Star, Users, Building2,
-  Radio, ChevronLeft, ChevronRight, AlertCircle, X,
-  ChevronDown, Navigation, CheckCircle2, UserCheck, RefreshCw,
-  Shield, MapPin, Clock, Phone, Package, ShieldCheck, User,
-  Zap, Calculator, ArrowUpRight, Gauge, Cpu, Route, Sparkles,
-  ExternalLink, Layers, Check, HelpCircle
+  Truck, Search, ArrowRight, Radio, AlertCircle,
+  Navigation, CheckCircle2, UserCheck, RefreshCw,
+  MapPin, Clock, Package, ShieldCheck, User,
+  Calculator, Cpu, Sparkles, ExternalLink, Check,
+  HelpCircle, ChevronDown, ChevronRight, Zap, Shield, ArrowUpRight
 } from 'lucide-react';
 
 const deliverySteps: { status: OrderStatus; label: string; icon: React.ElementType }[] = [
@@ -98,7 +97,6 @@ export const LandingPage: React.FC = () => {
         const live = await trackingApi.getLiveTracking(order.id);
         setPreviewLiveTracking(live);
       } catch {
-        // Fallback telemetry simulation
         setPreviewLiveTracking({
           orderId: order.id,
           trackingNumber: order.trackingNumber,
@@ -163,7 +161,7 @@ export const LandingPage: React.FC = () => {
       desc: 'Scheduled direct hub transit connecting Delhi NCR, Jaipur, Chandigarh, Lucknow, and Agra within guaranteed SLA windows.',
       sla: 'Under 6 Hours',
       type: 'Direct Van / Highway Linehaul',
-      badgeColor: 'bg-orange-50 text-brand-600 border-brand-200',
+      badgeColor: 'bg-orange-50 text-brand-700 border-brand-200',
     },
     {
       title: 'Hyperlocal Doorstep On-Demand',
@@ -218,53 +216,65 @@ export const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-brand-500 selection:text-white antialiased">
+    <div className="relative min-h-screen bg-slate-50/80 text-slate-900 font-sans selection:bg-brand-500 selection:text-white antialiased overflow-x-hidden">
       
       {/* ─────────────────────────────────────────────────────────────────────────────
-          1. FLOATING GLASSPHORPHISM NAVIGATION BAR
+          FULL-SCREEN 3D CONVEYOR BELT BACKGROUND (Spans entire background)
+      ───────────────────────────────────────────────────────────────────────────── */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        {/* Full Bleed 3D Canvas */}
+        <ConveyorHero3D className="absolute inset-0 w-full h-full" showOverlay={false} />
+        
+        {/* Atmospheric Light Scrims for pristine readability across entire page */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50/50 via-slate-50/80 to-slate-50/95 pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-orange-100/40 via-transparent to-slate-50/60 pointer-events-none" />
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────────────────────
+          1. FLOATING GLASSPHORPHISM NAVIGATION BAR (Light Theme)
       ───────────────────────────────────────────────────────────────────────────── */}
       <header className="fixed top-3 inset-x-0 z-50 px-4 sm:px-8 max-w-7xl mx-auto pointer-events-none">
         <div className="flex items-center justify-between gap-3 pointer-events-auto">
           
           {/* Logo Capsule */}
-          <div className="bg-slate-900/90 backdrop-blur-xl px-4 py-2 rounded-full border border-slate-800 shadow-xl transition hover:border-brand-500/50">
-            <GatimanLogo to="/" textColor="text-white" />
+          <div className="bg-white/90 backdrop-blur-xl px-4 py-2 rounded-full border border-slate-200/90 shadow-lg shadow-slate-900/5 transition hover:shadow-xl hover:border-brand-300">
+            <GatimanLogo to="/" />
           </div>
 
           {/* Center Navigation Links Capsule */}
-          <nav className="hidden lg:flex items-center gap-1 bg-slate-900/90 backdrop-blur-xl px-3 py-1.5 rounded-full border border-slate-800 shadow-xl text-xs font-semibold text-slate-300">
-            <a href="#home" className="px-3.5 py-1.5 rounded-full bg-slate-800 text-white font-bold transition shadow-xs">
+          <nav className="hidden lg:flex items-center gap-1 bg-white/90 backdrop-blur-xl px-3 py-1.5 rounded-full border border-slate-200/90 shadow-lg shadow-slate-900/5 text-xs font-semibold text-slate-600">
+            <a href="#home" className="px-3.5 py-1.5 rounded-full bg-slate-900 text-white font-bold transition shadow-xs">
               Home
             </a>
-            <a href="#tracking" className="px-3.5 py-1.5 rounded-full text-brand-400 hover:bg-brand-500/10 transition flex items-center gap-1.5">
-              <Radio className="w-3 h-3 animate-pulse text-brand-500" />
+            <a href="#tracking" className="px-3.5 py-1.5 rounded-full text-brand-600 hover:bg-brand-50 transition flex items-center gap-1.5 font-bold">
+              <Radio className="w-3.5 h-3.5 animate-pulse text-brand-500" />
               <span>Live Radar</span>
             </a>
-            <a href="#calculator" className="px-3.5 py-1.5 rounded-full hover:text-white hover:bg-slate-800/60 transition flex items-center gap-1">
-              <Calculator className="w-3 h-3 text-slate-400" />
+            <a href="#calculator" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-1">
+              <Calculator className="w-3.5 h-3.5 text-slate-500" />
               <span>Rate Calculator</span>
             </a>
-            <a href="#services" className="px-3.5 py-1.5 rounded-full hover:text-white hover:bg-slate-800/60 transition">
+            <a href="#services" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-slate-100 transition">
               Fleet &amp; Services
             </a>
-            <a href="#features" className="px-3.5 py-1.5 rounded-full hover:text-white hover:bg-slate-800/60 transition">
+            <a href="#features" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-slate-100 transition">
               Architecture
             </a>
-            <a href="#faq" className="px-3.5 py-1.5 rounded-full hover:text-white hover:bg-slate-800/60 transition">
+            <a href="#faq" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-slate-100 transition">
               FAQ
             </a>
           </nav>
 
           {/* Right Action Area */}
           <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md border border-slate-800 text-[11px] font-mono text-emerald-400">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 text-[11px] font-mono text-emerald-700 font-semibold shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
               <span>Hubs Online</span>
             </div>
 
             <Link
               to="/login"
-              className="inline-flex items-center justify-center px-5 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 border border-brand-400/30 transition shadow-lg shadow-brand-600/30 hover:scale-105 active:scale-95"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 border border-brand-400/30 transition shadow-md shadow-brand-600/20 hover:scale-105 active:scale-95 cursor-pointer"
             >
               <span>Portal Login</span>
               <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
@@ -277,7 +287,7 @@ export const LandingPage: React.FC = () => {
           FLOATING RIGHT-SIDE QUICK PERSONA ONBOARDING DOCK
       ───────────────────────────────────────────────────────────────────────────── */}
       <aside className="fixed right-3 sm:right-5 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3 pointer-events-auto">
-        <div className="flex flex-col gap-2.5 p-2 bg-slate-900/90 backdrop-blur-2xl rounded-full border border-slate-800 shadow-2xl shadow-black/50">
+        <div className="flex flex-col gap-2.5 p-2 bg-white/90 backdrop-blur-2xl rounded-full border border-slate-200/90 shadow-2xl shadow-slate-900/10">
           
           {/* Driver Quick Button */}
           <div className="relative group flex items-center justify-center">
@@ -290,7 +300,7 @@ export const LandingPage: React.FC = () => {
             </Link>
 
             <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center pointer-events-none animate-in fade-in slide-in-from-right-3 duration-200">
-              <div className="bg-slate-900 text-white text-xs px-3.5 py-2 rounded-2xl border border-slate-700 shadow-2xl whitespace-nowrap flex flex-col">
+              <div className="bg-slate-900 text-white text-xs px-3.5 py-2 rounded-2xl border border-slate-800 shadow-2xl whitespace-nowrap flex flex-col">
                 <span className="font-bold text-white flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   <span>Join Fleet as Driver</span>
@@ -311,7 +321,7 @@ export const LandingPage: React.FC = () => {
             </Link>
 
             <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center pointer-events-none animate-in fade-in slide-in-from-right-3 duration-200">
-              <div className="bg-slate-900 text-white text-xs px-3.5 py-2 rounded-2xl border border-slate-700 shadow-2xl whitespace-nowrap flex flex-col">
+              <div className="bg-slate-900 text-white text-xs px-3.5 py-2 rounded-2xl border border-slate-800 shadow-2xl whitespace-nowrap flex flex-col">
                 <span className="font-bold text-white flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
                   <span>Register as Customer</span>
@@ -325,41 +335,37 @@ export const LandingPage: React.FC = () => {
       </aside>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          2. HERO SECTION WITH EMBEDDED 3D CONVEYOR BACKGROUND
+          MAIN CONTENT LAYER (Floats with glass cards on top of full-bleed 3D background)
       ───────────────────────────────────────────────────────────────────────────── */}
-      <section id="home" className="relative pt-24 pb-16 px-4 sm:px-8 max-w-7xl mx-auto">
-        <div className="relative rounded-[2.5rem] overflow-hidden min-h-[620px] sm:min-h-[680px] flex flex-col justify-end p-6 sm:p-12 shadow-2xl border border-slate-800 bg-slate-900/40">
-          
-          {/* Photorealistic 3D WebGL Conveyor Simulation Canvas */}
-          <ConveyorHero3D />
+      <main className="relative z-10">
 
-          {/* Deep ambient contrast gradient overlay to ensure crystal clear readability */}
-          <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent z-5" />
-          <div className="absolute inset-0 pointer-events-none bg-radial-at-bl from-slate-950/90 via-transparent to-transparent z-5" />
-
-          {/* Hero Content Stack */}
-          <div className="relative z-10 max-w-3xl space-y-6">
+        {/* ─────────────────────────────────────────────────────────────────────────────
+            2. HERO SECTION (Light Theme, Uncontained Full-Background 3D)
+        ───────────────────────────────────────────────────────────────────────────── */}
+        <section id="home" className="pt-32 sm:pt-40 pb-16 px-4 sm:px-8 max-w-7xl mx-auto">
+          <div className="max-w-3xl space-y-6">
             
             {/* Pill Tag */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-bold text-brand-300 shadow-sm">
-              <Sparkles className="w-3.5 h-3.5 text-brand-400" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-brand-200/80 text-xs font-bold text-brand-700 shadow-sm">
+              <Sparkles className="w-3.5 h-3.5 text-brand-500" />
               <span>Next-Gen Hyperlocal &amp; Inter-City Dispatch</span>
             </div>
 
-            {/* Headline */}
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-heading font-black text-white leading-[1.05] tracking-tight">
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-heading font-black text-slate-950 leading-[1.08] tracking-tight">
               Speed-of-Light Last-Mile Logistics.
             </h1>
             
-            <p className="text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed">
-              Deterministic volumetric rating, automated proximity driver pairing, and real-time sub-second GPS telemetry built for modern commerce.
+            {/* Sub-headline */}
+            <p className="text-base sm:text-lg text-slate-700 max-w-2xl leading-relaxed font-normal">
+              Deterministic volumetric rating, automated proximity driver pairing, and real-time sub-second GPS telemetry engineered for modern commerce.
             </p>
 
             {/* Action Buttons */}
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Link
                 to="/register/customer"
-                className="px-6 py-3.5 rounded-full bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 text-white font-bold text-sm transition flex items-center gap-2 shadow-lg shadow-brand-600/40 hover:scale-105 active:scale-95"
+                className="px-7 py-4 rounded-full bg-gradient-to-r from-brand-600 via-brand-500 to-rose-600 hover:from-brand-700 hover:to-rose-700 text-white font-bold text-sm transition flex items-center gap-2 shadow-xl shadow-brand-600/30 hover:scale-105 active:scale-95 cursor-pointer"
               >
                 <span>Book Instant Pickup</span>
                 <ArrowRight className="w-4 h-4" />
@@ -367,710 +373,713 @@ export const LandingPage: React.FC = () => {
 
               <a
                 href="#tracking"
-                className="px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-bold text-sm transition flex items-center gap-2"
+                className="px-7 py-4 rounded-full bg-white/90 hover:bg-white text-slate-800 font-bold text-sm transition flex items-center gap-2 border border-slate-200/90 shadow-md shadow-slate-900/5 hover:border-brand-300"
               >
-                <Radio className="w-4 h-4 text-brand-400 animate-pulse" />
+                <Radio className="w-4 h-4 text-brand-500 animate-pulse" />
                 <span>Track Live Radar</span>
               </a>
 
               <a
                 href="#calculator"
-                className="px-6 py-3.5 rounded-full bg-slate-900/80 hover:bg-slate-800/80 backdrop-blur-md border border-slate-700 text-slate-200 font-bold text-sm transition flex items-center gap-2"
+                className="px-6 py-4 rounded-full bg-white/70 hover:bg-white text-slate-700 font-bold text-sm transition flex items-center gap-2 border border-slate-200/80 shadow-xs"
               >
-                <Calculator className="w-4 h-4 text-slate-400" />
+                <Calculator className="w-4 h-4 text-slate-500" />
                 <span>Rate Estimator</span>
               </a>
             </div>
 
-            {/* Live Platform KPI Stats Bar */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-white/10 text-xs">
-              <div className="p-3 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10">
-                <span className="text-slate-400 block text-[11px]">Average Pairing</span>
-                <span className="text-lg font-black text-white mt-0.5 block font-heading">⚡ 12.4 Min</span>
+            {/* Live Platform KPI Stats Bar (Light Glass Card) */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 pt-8 text-xs">
+              <div className="p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/90 shadow-md shadow-slate-900/5">
+                <span className="text-slate-500 block text-[11px] font-semibold">Average Pairing</span>
+                <span className="text-xl font-black text-slate-950 mt-1 block font-heading">⚡ 12.4 Min</span>
               </div>
-              <div className="p-3 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10">
-                <span className="text-slate-400 block text-[11px]">On-Time SLA</span>
-                <span className="text-lg font-black text-emerald-400 mt-0.5 block font-heading">🎯 99.8%</span>
+              <div className="p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/90 shadow-md shadow-slate-900/5">
+                <span className="text-slate-500 block text-[11px] font-semibold">On-Time SLA</span>
+                <span className="text-xl font-black text-emerald-700 mt-1 block font-heading">🎯 99.8%</span>
               </div>
-              <div className="p-3 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10">
-                <span className="text-slate-400 block text-[11px]">Express Hubs</span>
-                <span className="text-lg font-black text-amber-400 mt-0.5 block font-heading">📍 500+ Active</span>
+              <div className="p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/90 shadow-md shadow-slate-900/5">
+                <span className="text-slate-500 block text-[11px] font-semibold">Express Hubs</span>
+                <span className="text-xl font-black text-amber-700 mt-1 block font-heading">📍 500+ Active</span>
               </div>
-              <div className="p-3 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10">
-                <span className="text-slate-400 block text-[11px]">OTP Protected</span>
-                <span className="text-lg font-black text-teal-400 mt-0.5 block font-heading">🛡️ 100% Verified</span>
+              <div className="p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/90 shadow-md shadow-slate-900/5">
+                <span className="text-slate-500 block text-[11px] font-semibold">OTP Protected</span>
+                <span className="text-xl font-black text-teal-700 mt-1 block font-heading">🛡️ 100% Verified</span>
               </div>
             </div>
 
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          3. REAL-TIME TRACKING RADAR COCKPIT
-      ───────────────────────────────────────────────────────────────────────────── */}
-      <section id="tracking" className="px-4 sm:px-8 max-w-7xl mx-auto -mt-8 mb-16 relative z-20">
-        <div className="bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-800">
-          
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-            <div>
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <Radio className="w-5 h-5 text-brand-500 animate-pulse" />
-                <span>Live Inter-City Radar &amp; Parcel Telemetry</span>
-              </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Instant GPS telemetry, corridor transit status, and automated driver ETA countdown.
-              </p>
-            </div>
+        {/* ─────────────────────────────────────────────────────────────────────────────
+            3. REAL-TIME TRACKING RADAR COCKPIT (Light Theme)
+        ───────────────────────────────────────────────────────────────────────────── */}
+        <section id="tracking" className="px-4 sm:px-8 max-w-7xl mx-auto mb-20 relative">
+          <div className="bg-white/95 backdrop-blur-xl rounded-[2.5rem] p-6 sm:p-10 shadow-2xl shadow-slate-900/10 border border-slate-200/90">
             
-            {/* Quick Sample Tracking Numbers */}
-            <div className="flex items-center gap-1.5 flex-wrap text-xs">
-              <span className="text-slate-500 font-mono text-[11px]">Try demo:</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setTrackingInput('GTM-20260820-875171');
-                  handleQuickTrackSubmit(undefined, 'GTM-20260820-875171');
-                }}
-                className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-brand-400 font-mono text-[11px] border border-slate-700 transition cursor-pointer"
-              >
-                GTM-20260820-875171
-              </button>
-            </div>
-          </div>
-
-          <form onSubmit={handleQuickTrackSubmit} className="flex flex-col md:flex-row items-center gap-3">
-            <div className="relative flex-1 w-full">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-brand-500" />
-              </div>
-              <input
-                id="tracking-radar-input"
-                type="text"
-                value={trackingInput}
-                onChange={(e) => setTrackingInput(e.target.value)}
-                placeholder="Enter Ship It tracking number (e.g. GTM-20260820-875171)..."
-                className="w-full pl-11 pr-4 py-3.5 text-sm bg-slate-950 border border-slate-800 rounded-2xl text-white placeholder:text-slate-600 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 font-mono transition"
-              />
-            </div>
-            
-            <button
-              type="submit"
-              disabled={isSearching}
-              className="w-full md:w-auto px-8 py-3.5 bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 text-white text-sm font-bold rounded-2xl transition flex items-center justify-center gap-2 shadow-lg shadow-brand-600/30 cursor-pointer disabled:opacity-50"
-            >
-              {isSearching ? <span className="animate-spin">↻</span> : <Radio className="w-4 h-4 text-white" />}
-              <span>Track Live Telemetry</span>
-            </button>
-          </form>
-
-          {searchError && (
-            <div className="mt-4 p-3.5 rounded-xl bg-rose-950/50 border border-rose-800 text-xs text-rose-300 font-semibold flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{searchError}</span>
-            </div>
-          )}
-
-          {/* ─────────────────────────────────────────────────────────────────────────────
-              ACTIVE LIVE TELEMETRY DASHBOARD PREVIEW
-          ───────────────────────────────────────────────────────────────────────────── */}
-          {previewOrder && previewLiveTracking && (
-            <div className="mt-6 space-y-6 animate-in fade-in duration-300">
-              
-              {/* Top Banner with Tracking Number & Active Status */}
-              <div className="p-6 rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-xl">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-800">
-                  <div>
-                    <div className="flex items-center gap-2.5 flex-wrap">
-                      <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-brand-600 text-white flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                        <span>{previewOrder.status}</span>
-                      </span>
-                      <span className="font-mono text-base sm:text-lg font-bold text-white tracking-wide">
-                        {previewOrder.trackingNumber}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-400 mt-1.5">
-                      Corridor Transit: <strong className="text-slate-200 font-mono">{previewOrder.pickupPincode}</strong> ➔ <strong className="text-slate-200 font-mono">{previewOrder.dropPincode}</strong> · Total Billed: <strong className="text-emerald-400">₹{previewOrder.totalCharge}</strong>
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-2 self-start sm:self-auto">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs text-orange-400 font-bold">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>OTP Protected Delivery</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 6-Step Visual Milestone Stepper */}
-                <div className="py-6 border-b border-slate-800">
-                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-                    {deliverySteps.map((step, idx) => {
-                      const currentIdx = getStepIndex(previewOrder.status);
-                      const isCompleted = idx < currentIdx;
-                      const isCurrent = idx === currentIdx;
-                      const StepIcon = step.icon;
-
-                      return (
-                        <div key={step.status} className="flex flex-col items-center text-center">
-                          <div
-                            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                              isCurrent
-                                ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/40 ring-4 ring-brand-500/20 scale-110'
-                                : isCompleted
-                                ? 'bg-emerald-500 text-white'
-                                : 'bg-slate-800 text-slate-500 border border-slate-700'
-                            }`}
-                          >
-                            <StepIcon className="w-4 h-4" />
-                          </div>
-                          <span className={`text-[11px] font-bold mt-2 ${
-                            isCurrent ? 'text-brand-400' : isCompleted ? 'text-slate-200' : 'text-slate-500'
-                          }`}>
-                            {step.label}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Real-time Telemetry Metrics Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-5 text-xs">
-                  <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-                    <span className="text-slate-400 block text-[11px]">Assigned Driver</span>
-                    <span className="font-bold text-white text-sm mt-0.5 block truncate">
-                      {previewLiveTracking.deliveryPartner?.name || 'Rajesh Kumar'}
-                    </span>
-                  </div>
-                  <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-                    <span className="text-slate-400 block text-[11px]">Distance Remaining</span>
-                    <span className="font-bold text-emerald-400 text-sm mt-0.5 block">
-                      {previewLiveTracking.distanceRemaining || 3.4} km
-                    </span>
-                  </div>
-                  <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-                    <span className="text-slate-400 block text-[11px]">Estimated Arrival</span>
-                    <span className="font-bold text-amber-400 text-sm mt-0.5 block">
-                      ~{previewLiveTracking.etaMinutes || 12} mins
-                    </span>
-                  </div>
-                  <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-                    <span className="text-slate-400 block text-[11px]">Fleet Vehicle</span>
-                    <span className="font-bold text-white text-sm mt-0.5 block font-mono">
-                      {previewLiveTracking.deliveryPartner?.vehicleNumber || 'DL-03-EV-9821'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Corridor Route & Milestone Timeline Split Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                {/* Left: Origin & Destination Route Card */}
-                <div className="p-5 rounded-3xl bg-slate-950 border border-slate-800 space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-brand-500" />
-                    <span>Corridor Route &amp; Addresses</span>
-                  </h4>
-
-                  {/* Pickup Endpoint */}
-                  <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-900 border border-slate-800">
-                    <div className="w-8 h-8 rounded-full bg-brand-500/10 text-brand-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Package className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold uppercase text-brand-400">Origin / Pickup</span>
-                      <h5 className="text-xs font-bold text-white mt-0.5">{previewOrder.pickupName}</h5>
-                      <p className="text-xs text-slate-400 mt-0.5">{previewOrder.pickupAddress}</p>
-                      <span className="inline-block mt-1 font-mono text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-300">
-                        PIN: {previewOrder.pickupPincode}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Destination Endpoint */}
-                  <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-900 border border-slate-800">
-                    <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold uppercase text-emerald-400">Destination / Dropoff</span>
-                      <h5 className="text-xs font-bold text-white mt-0.5">{previewOrder.dropName}</h5>
-                      <p className="text-xs text-slate-400 mt-0.5">{previewOrder.dropAddress}</p>
-                      <span className="inline-block mt-1 font-mono text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-300">
-                        PIN: {previewOrder.dropPincode}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right: Milestone Event Timeline */}
-                <div className="p-5 rounded-3xl bg-slate-950 border border-slate-800 space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                    <Clock className="w-4 h-4 text-brand-500" />
-                    <span>Real-Time Milestone Log</span>
-                  </h4>
-
-                  <div className="space-y-2.5">
-                    {trackingTimeline.length > 0 ? (
-                      trackingTimeline.map((ev, idx) => (
-                        <div key={idx} className="flex items-start gap-3 p-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs">
-                          <div className="w-2 h-2 rounded-full bg-brand-500 mt-1.5 shrink-0" />
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              <strong className="text-white">{ev.newStatus}</strong>
-                              <span className="text-[10px] text-slate-500 font-mono">
-                                {ev.eventTimestamp ? new Date(ev.eventTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Live'}
-                              </span>
-                            </div>
-                            <p className="text-slate-400 mt-0.5 text-[11px]">{ev.remarks || `Status updated to ${ev.newStatus}`}</p>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-slate-400 space-y-2">
-                        <div className="flex items-center justify-between text-white font-semibold">
-                          <span>Corridor Transit Active</span>
-                          <span className="text-[10px] font-mono text-emerald-400 font-bold">LIVE TELEMETRY</span>
-                        </div>
-                        <p className="text-slate-400 text-[11px]">
-                          Driver {previewLiveTracking.deliveryPartner?.name || 'Partner'} is moving along the designated corridor. Updates are broadcast via sub-second WebSocket telemetry.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-              </div>
-
-            </div>
-          )}
-
-        </div>
-      </section>
-
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          4. INTERACTIVE VOLUMETRIC RATE CALCULATOR TOOL
-      ───────────────────────────────────────────────────────────────────────────── */}
-      <section id="calculator" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto">
-        <div className="rounded-[2.5rem] bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 border border-slate-800 p-6 sm:p-12 shadow-2xl">
-          
-          <div className="max-w-3xl mb-10 space-y-3">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/30 text-[11px] font-bold uppercase tracking-wider text-brand-400">
-              <Calculator className="w-3.5 h-3.5" />
-              <span>Deterministic Rating Engine</span>
-            </span>
-            <h2 className="text-3xl sm:text-5xl font-heading font-black text-white tracking-tight">
-              Instant Volumetric Rate Calculator
-            </h2>
-            <p className="text-slate-400 text-sm sm:text-base">
-              Calculate exact shipping costs in real-time based on actual dead weight versus cubic dimensional weight: <span className="font-mono text-brand-400">(L × B × H) / 5000</span>.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
-            {/* Left Form Controls (7 Cols) */}
-            <div className="lg:col-span-7 space-y-6">
-              
-              {/* Route Type Selector */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                  Route Scope
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setCalcRouteType('INTRA_ZONE')}
-                    className={`p-3.5 rounded-2xl border text-xs font-bold flex items-center justify-between transition cursor-pointer ${
-                      calcRouteType === 'INTRA_ZONE'
-                        ? 'bg-brand-500/10 border-brand-500 text-white ring-1 ring-brand-500'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
-                    }`}
-                  >
-                    <div className="text-left">
-                      <div>Intra-City Zone</div>
-                      <div className="text-[10px] text-slate-500 font-normal mt-0.5">Same Hub / Same City</div>
-                    </div>
-                    {calcRouteType === 'INTRA_ZONE' && <Check className="w-4 h-4 text-brand-400" />}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setCalcRouteType('INTER_ZONE')}
-                    className={`p-3.5 rounded-2xl border text-xs font-bold flex items-center justify-between transition cursor-pointer ${
-                      calcRouteType === 'INTER_ZONE'
-                        ? 'bg-brand-500/10 border-brand-500 text-white ring-1 ring-brand-500'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
-                    }`}
-                  >
-                    <div className="text-left">
-                      <div>Inter-City Corridor</div>
-                      <div className="text-[10px] text-slate-500 font-normal mt-0.5">Between Different Cities</div>
-                    </div>
-                    {calcRouteType === 'INTER_ZONE' && <Check className="w-4 h-4 text-brand-400" />}
-                  </button>
-                </div>
+                <h3 className="text-xl sm:text-2xl font-heading font-black text-slate-950 flex items-center gap-2.5">
+                  <Radio className="w-6 h-6 text-brand-500 animate-pulse" />
+                  <span>Live Inter-City Radar &amp; Parcel Telemetry</span>
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                  Instant GPS telemetry, corridor transit status, and automated driver ETA countdown.
+                </p>
               </div>
-
-              {/* Package Dimensions (L, B, H) */}
-              <div className="space-y-2">
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
-                  Parcel Dimensions (Centimeters)
-                </label>
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <span className="text-[10px] text-slate-500 block mb-1">Length (cm)</span>
-                    <input
-                      type="number"
-                      min="1"
-                      value={calcLength}
-                      onChange={(e) => setCalcLength(Math.max(1, Number(e.target.value)))}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:border-brand-500 focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-slate-500 block mb-1">Breadth (cm)</span>
-                    <input
-                      type="number"
-                      min="1"
-                      value={calcBreadth}
-                      onChange={(e) => setCalcBreadth(Math.max(1, Number(e.target.value)))}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:border-brand-500 focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-slate-500 block mb-1">Height (cm)</span>
-                    <input
-                      type="number"
-                      min="1"
-                      value={calcHeight}
-                      onChange={(e) => setCalcHeight(Math.max(1, Number(e.target.value)))}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:border-brand-500 focus:outline-none"
-                    />
-                  </div>
-                </div>
+              
+              {/* Quick Sample Tracking Numbers */}
+              <div className="flex items-center gap-2 flex-wrap text-xs">
+                <span className="text-slate-500 font-mono text-[11px]">Demo ID:</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTrackingInput('GTM-20260820-875171');
+                    handleQuickTrackSubmit(undefined, 'GTM-20260820-875171');
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-brand-50 text-brand-600 font-mono text-xs font-bold border border-slate-200 hover:border-brand-300 transition cursor-pointer"
+                >
+                  GTM-20260820-875171
+                </button>
               </div>
+            </div>
 
-              {/* Actual Physical Dead Weight */}
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                    Actual Dead Weight
-                  </label>
-                  <span className="text-xs font-mono font-bold text-brand-400">{calcActualWeight} kg</span>
+            <form onSubmit={handleQuickTrackSubmit} className="flex flex-col md:flex-row items-center gap-3">
+              <div className="relative flex-1 w-full">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-brand-500" />
                 </div>
                 <input
-                  type="range"
-                  min="0.1"
-                  max="30"
-                  step="0.1"
-                  value={calcActualWeight}
-                  onChange={(e) => setCalcActualWeight(Number(e.target.value))}
-                  className="w-full accent-brand-500 bg-slate-800 rounded-lg cursor-pointer h-2"
+                  id="tracking-radar-input"
+                  type="text"
+                  value={trackingInput}
+                  onChange={(e) => setTrackingInput(e.target.value)}
+                  placeholder="Enter Ship It tracking number (e.g. GTM-20260820-875171)..."
+                  className="w-full pl-12 pr-4 py-4 text-sm bg-slate-50/80 border border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 font-mono transition shadow-inner"
                 />
-                <div className="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
-                  <span>0.1 kg</span>
-                  <span>15 kg</span>
-                  <span>30 kg</span>
-                </div>
               </div>
+              
+              <button
+                type="submit"
+                disabled={isSearching}
+                className="w-full md:w-auto px-9 py-4 bg-gradient-to-r from-brand-600 via-brand-500 to-rose-600 hover:from-brand-700 hover:to-rose-700 text-white text-sm font-bold rounded-2xl transition flex items-center justify-center gap-2 shadow-lg shadow-brand-600/20 cursor-pointer disabled:opacity-50"
+              >
+                {isSearching ? <span className="animate-spin">↻</span> : <Radio className="w-4 h-4 text-white" />}
+                <span>Track Live Telemetry</span>
+              </button>
+            </form>
 
+            {searchError && (
+              <div className="mt-4 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-semibold flex items-center gap-2.5">
+                <AlertCircle className="w-5 h-5 shrink-0 text-rose-600" />
+                <span>{searchError}</span>
+              </div>
+            )}
+
+            {/* ─────────────────────────────────────────────────────────────────────────────
+                ACTIVE LIVE TELEMETRY DASHBOARD PREVIEW
+            ───────────────────────────────────────────────────────────────────────────── */}
+            {previewOrder && previewLiveTracking && (
+              <div className="mt-8 space-y-6 animate-in fade-in duration-300">
+                
+                {/* Top Banner with Tracking Number & Active Status */}
+                <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 text-white shadow-xl">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+                    <div>
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <span className="px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-brand-600 text-white flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                          <span>{previewOrder.status}</span>
+                        </span>
+                        <span className="font-mono text-lg sm:text-xl font-bold text-white tracking-wide">
+                          {previewOrder.trackingNumber}
+                        </span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-slate-400 mt-2">
+                        Corridor Transit: <strong className="text-slate-200 font-mono">{previewOrder.pickupPincode}</strong> ➔ <strong className="text-slate-200 font-mono">{previewOrder.dropPincode}</strong> · Total Billed: <strong className="text-emerald-400 font-bold">₹{previewOrder.totalCharge}</strong>
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 self-start sm:self-auto">
+                      <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs text-emerald-400 font-bold">
+                        <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                        <span>OTP Protected Delivery</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 6-Step Visual Milestone Stepper */}
+                  <div className="py-6 border-b border-slate-800">
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                      {deliverySteps.map((step, idx) => {
+                        const currentIdx = getStepIndex(previewOrder.status);
+                        const isCompleted = idx < currentIdx;
+                        const isCurrent = idx === currentIdx;
+                        const StepIcon = step.icon;
+
+                        return (
+                          <div key={step.status} className="flex flex-col items-center text-center">
+                            <div
+                              className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                                isCurrent
+                                  ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/40 ring-4 ring-brand-500/20 scale-110'
+                                  : isCompleted
+                                  ? 'bg-emerald-500 text-white'
+                                  : 'bg-slate-800 text-slate-500 border border-slate-700'
+                              }`}
+                            >
+                              <StepIcon className="w-5 h-5" />
+                            </div>
+                            <span className={`text-[11px] font-bold mt-2 ${
+                              isCurrent ? 'text-brand-400' : isCompleted ? 'text-slate-200' : 'text-slate-500'
+                            }`}>
+                              {step.label}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Real-time Telemetry Metrics Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 text-xs">
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                      <span className="text-slate-400 block text-[11px]">Assigned Driver</span>
+                      <span className="font-bold text-white text-base mt-1 block truncate">
+                        {previewLiveTracking.deliveryPartner?.name || 'Rajesh Kumar'}
+                      </span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                      <span className="text-slate-400 block text-[11px]">Distance Remaining</span>
+                      <span className="font-bold text-emerald-400 text-base mt-1 block">
+                        {previewLiveTracking.distanceRemaining || 3.4} km
+                      </span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                      <span className="text-slate-400 block text-[11px]">Estimated Arrival</span>
+                      <span className="font-bold text-amber-400 text-base mt-1 block">
+                        ~{previewLiveTracking.etaMinutes || 12} mins
+                      </span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                      <span className="text-slate-400 block text-[11px]">Fleet Vehicle</span>
+                      <span className="font-bold text-white text-base mt-1 block font-mono">
+                        {previewLiveTracking.deliveryPartner?.vehicleNumber || 'DL-03-EV-9821'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Corridor Route & Milestone Timeline Split Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  
+                  {/* Left: Origin & Destination Route Card */}
+                  <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200 space-y-4">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                      <MapPin className="w-4 h-4 text-brand-500" />
+                      <span>Corridor Route &amp; Addresses</span>
+                    </h4>
+
+                    {/* Pickup Endpoint */}
+                    <div className="flex items-start gap-3.5 p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
+                      <div className="w-9 h-9 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center shrink-0 mt-0.5">
+                        <Package className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold uppercase text-brand-600">Origin / Pickup</span>
+                        <h5 className="text-sm font-bold text-slate-900 mt-0.5">{previewOrder.pickupName}</h5>
+                        <p className="text-xs text-slate-600 mt-0.5">{previewOrder.pickupAddress}</p>
+                        <span className="inline-block mt-1.5 font-mono text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-700 font-semibold">
+                          PIN: {previewOrder.pickupPincode}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Destination Endpoint */}
+                    <div className="flex items-start gap-3.5 p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
+                      <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                        <CheckCircle2 className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold uppercase text-emerald-700">Destination / Dropoff</span>
+                        <h5 className="text-sm font-bold text-slate-900 mt-0.5">{previewOrder.dropName}</h5>
+                        <p className="text-xs text-slate-600 mt-0.5">{previewOrder.dropAddress}</p>
+                        <span className="inline-block mt-1.5 font-mono text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-700 font-semibold">
+                          PIN: {previewOrder.dropPincode}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Milestone Event Timeline */}
+                  <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200 space-y-4">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-brand-500" />
+                      <span>Real-Time Milestone Log</span>
+                    </h4>
+
+                    <div className="space-y-2.5">
+                      {trackingTimeline.length > 0 ? (
+                        trackingTimeline.map((ev, idx) => (
+                          <div key={idx} className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200 text-xs shadow-xs">
+                            <div className="w-2.5 h-2.5 rounded-full bg-brand-500 mt-1 shrink-0" />
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <strong className="text-slate-900">{ev.newStatus}</strong>
+                                <span className="text-[10px] text-slate-400 font-mono">
+                                  {ev.eventTimestamp ? new Date(ev.eventTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Live'}
+                                </span>
+                              </div>
+                              <p className="text-slate-500 mt-0.5 text-[11px]">{ev.remarks || `Status updated to ${ev.newStatus}`}</p>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="p-4 rounded-2xl bg-white border border-slate-200 text-xs text-slate-600 space-y-2 shadow-xs">
+                          <div className="flex items-center justify-between text-slate-900 font-semibold">
+                            <span>Corridor Transit Active</span>
+                            <span className="text-[10px] font-mono text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">LIVE TELEMETRY</span>
+                          </div>
+                          <p className="text-slate-500 text-[11px]">
+                            Driver {previewLiveTracking.deliveryPartner?.name || 'Partner'} is moving along the designated corridor. Updates are broadcast via sub-second WebSocket telemetry.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            )}
+
+          </div>
+        </section>
+
+        {/* ─────────────────────────────────────────────────────────────────────────────
+            4. INTERACTIVE VOLUMETRIC RATE CALCULATOR TOOL (Light Theme)
+        ───────────────────────────────────────────────────────────────────────────── */}
+        <section id="calculator" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto">
+          <div className="rounded-[2.5rem] bg-white/95 backdrop-blur-xl border border-slate-200/90 p-6 sm:p-12 shadow-2xl shadow-slate-900/5">
+            
+            <div className="max-w-3xl mb-10 space-y-3">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-[11px] font-bold uppercase tracking-wider text-brand-700">
+                <Calculator className="w-3.5 h-3.5" />
+                <span>Deterministic Rating Engine</span>
+              </span>
+              <h2 className="text-3xl sm:text-5xl font-heading font-black text-slate-950 tracking-tight">
+                Instant Volumetric Rate Calculator
+              </h2>
+              <p className="text-slate-600 text-sm sm:text-base">
+                Calculate exact shipping costs in real-time based on actual dead weight versus cubic dimensional weight: <span className="font-mono font-bold text-brand-600">(L × B × H) / 5000</span>.
+              </p>
             </div>
 
-            {/* Right Computed Rate Card (5 Cols) */}
-            <div className="lg:col-span-5 p-6 rounded-3xl bg-slate-950 border border-slate-800 space-y-6 shadow-xl">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Estimated Price</span>
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
-                  B2C Standard Rate
-                </span>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              
+              {/* Left Form Controls (7 Cols) */}
+              <div className="lg:col-span-7 space-y-6">
+                
+                {/* Route Type Selector */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                    Route Scope
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setCalcRouteType('INTRA_ZONE')}
+                      className={`p-4 rounded-2xl border text-xs font-bold flex items-center justify-between transition cursor-pointer ${
+                        calcRouteType === 'INTRA_ZONE'
+                          ? 'bg-brand-50/80 border-brand-500 text-slate-950 ring-2 ring-brand-500/20 shadow-sm'
+                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
+                      }`}
+                    >
+                      <div className="text-left">
+                        <div className="font-bold">Intra-City Zone</div>
+                        <div className="text-[10px] text-slate-500 font-normal mt-0.5">Same Hub / Same City</div>
+                      </div>
+                      {calcRouteType === 'INTRA_ZONE' && <Check className="w-4 h-4 text-brand-600" />}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setCalcRouteType('INTER_ZONE')}
+                      className={`p-4 rounded-2xl border text-xs font-bold flex items-center justify-between transition cursor-pointer ${
+                        calcRouteType === 'INTER_ZONE'
+                          ? 'bg-brand-50/80 border-brand-500 text-slate-950 ring-2 ring-brand-500/20 shadow-sm'
+                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
+                      }`}
+                    >
+                      <div className="text-left">
+                        <div className="font-bold">Inter-City Corridor</div>
+                        <div className="text-[10px] text-slate-500 font-normal mt-0.5">Between Different Cities</div>
+                      </div>
+                      {calcRouteType === 'INTER_ZONE' && <Check className="w-4 h-4 text-brand-600" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Package Dimensions (L, B, H) */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Parcel Dimensions (Centimeters)
+                  </label>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <span className="text-[10px] text-slate-500 block mb-1">Length (cm)</span>
+                      <input
+                        type="number"
+                        min="1"
+                        value={calcLength}
+                        onChange={(e) => setCalcLength(Math.max(1, Number(e.target.value)))}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-3 text-sm font-mono text-slate-900 focus:bg-white focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 shadow-inner font-bold"
+                      />
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-slate-500 block mb-1">Breadth (cm)</span>
+                      <input
+                        type="number"
+                        min="1"
+                        value={calcBreadth}
+                        onChange={(e) => setCalcBreadth(Math.max(1, Number(e.target.value)))}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-3 text-sm font-mono text-slate-900 focus:bg-white focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 shadow-inner font-bold"
+                      />
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-slate-500 block mb-1">Height (cm)</span>
+                      <input
+                        type="number"
+                        min="1"
+                        value={calcHeight}
+                        onChange={(e) => setCalcHeight(Math.max(1, Number(e.target.value)))}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-3 text-sm font-mono text-slate-900 focus:bg-white focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 shadow-inner font-bold"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actual Physical Dead Weight */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      Actual Dead Weight
+                    </label>
+                    <span className="text-xs font-mono font-bold text-brand-600 bg-brand-50 px-2.5 py-1 rounded-lg border border-brand-200">
+                      {calcActualWeight} kg
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0.1"
+                    max="30"
+                    step="0.1"
+                    value={calcActualWeight}
+                    onChange={(e) => setCalcActualWeight(Number(e.target.value))}
+                    className="w-full accent-brand-600 bg-slate-200 rounded-lg cursor-pointer h-2.5"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-400 font-mono mt-1">
+                    <span>0.1 kg</span>
+                    <span>15 kg</span>
+                    <span>30 kg</span>
+                  </div>
+                </div>
+
               </div>
 
-              <div className="text-center py-2">
-                <span className="text-4xl sm:text-5xl font-black font-heading text-white tracking-tight">
-                  ₹{calculatedEstimates.charge}
-                </span>
-                <span className="text-xs text-slate-500 block mt-1">
-                  Estimated Transit Time: <strong className="text-slate-300">{calculatedEstimates.transitTime}</strong>
-                </span>
+              {/* Right Computed Rate Card (5 Cols) */}
+              <div className="lg:col-span-5 p-7 rounded-3xl bg-slate-900 text-white space-y-6 shadow-2xl">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Estimated Price</span>
+                  <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
+                    B2C Standard Rate
+                  </span>
+                </div>
+
+                <div className="text-center py-2">
+                  <span className="text-5xl font-black font-heading text-white tracking-tight">
+                    ₹{calculatedEstimates.charge}
+                  </span>
+                  <span className="text-xs text-slate-400 block mt-1.5">
+                    Estimated Transit Time: <strong className="text-brand-400">{calculatedEstimates.transitTime}</strong>
+                  </span>
+                </div>
+
+                {/* Weight Breakdown Comparison */}
+                <div className="space-y-2.5 text-xs bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                  <div className="flex justify-between text-slate-400">
+                    <span>Actual Scale Weight:</span>
+                    <span className="font-mono text-white font-bold">{calcActualWeight} kg</span>
+                  </div>
+                  <div className="flex justify-between text-slate-400">
+                    <span>Volumetric Weight:</span>
+                    <span className="font-mono text-brand-400 font-bold">{calculatedEstimates.volumetricWeight} kg</span>
+                  </div>
+                  <div className="flex justify-between text-slate-200 font-bold pt-2 border-t border-slate-800">
+                    <span>Billable Weight:</span>
+                    <span className="font-mono text-emerald-400 text-sm">{calculatedEstimates.billableWeight} kg</span>
+                  </div>
+                </div>
+
+                <Link
+                  to="/register/customer"
+                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-brand-600/30 hover:scale-105 active:scale-95 cursor-pointer"
+                >
+                  <span>Dispatch Shipment at this Rate</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
               </div>
 
-              {/* Weight Breakdown Comparison */}
-              <div className="space-y-2.5 text-xs bg-slate-900/60 p-4 rounded-2xl border border-slate-800/80">
-                <div className="flex justify-between text-slate-400">
-                  <span>Actual Scale Weight:</span>
-                  <span className="font-mono text-white font-bold">{calcActualWeight} kg</span>
-                </div>
-                <div className="flex justify-between text-slate-400">
-                  <span>Volumetric Weight:</span>
-                  <span className="font-mono text-brand-400 font-bold">{calculatedEstimates.volumetricWeight} kg</span>
-                </div>
-                <div className="flex justify-between text-slate-200 font-bold pt-2 border-t border-slate-800">
-                  <span>Billable Weight:</span>
-                  <span className="font-mono text-emerald-400">{calculatedEstimates.billableWeight} kg</span>
-                </div>
-              </div>
-
-              <Link
-                to="/register/customer"
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-brand-600/30"
-              >
-                <span>Dispatch Shipment at this Rate</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
             </div>
 
           </div>
+        </section>
 
-        </div>
-      </section>
+        {/* ─────────────────────────────────────────────────────────────────────────────
+            5. FLEET & SERVICES SHOWCASE (Light Theme)
+        ───────────────────────────────────────────────────────────────────────────── */}
+        <section id="services" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div className="space-y-3">
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white border border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-700 shadow-xs">
+                <Truck className="w-3.5 h-3.5 text-brand-600" />
+                <span>Corridor Transit &amp; Fleet Solutions</span>
+              </span>
+              <h2 className="text-3xl sm:text-5xl font-heading font-black text-slate-950 tracking-tight">
+                Engineered for Every Cargo Dimension
+              </h2>
+            </div>
 
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          5. FLEET & SERVICES SHOWCASE
-      ───────────────────────────────────────────────────────────────────────────── */}
-      <section id="services" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div className="space-y-3">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              <Truck className="w-3.5 h-3.5 text-brand-400" />
-              <span>Corridor Transit &amp; Fleet Solutions</span>
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0">
+              {services.map((s, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setActiveServiceTab(idx)}
+                  className={`px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+                    activeServiceTab === idx
+                      ? 'bg-slate-900 text-white shadow-md'
+                      : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
+                  }`}
+                >
+                  {s.tag}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Highlighted Service Card */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center rounded-[2.5rem] bg-white/95 backdrop-blur-xl border border-slate-200/90 p-6 sm:p-10 shadow-2xl shadow-slate-900/5">
+            <div className="lg:col-span-6 relative h-64 sm:h-80 rounded-3xl overflow-hidden border border-slate-200 shadow-inner">
+              <img
+                src={services[activeServiceTab].image}
+                alt={services[activeServiceTab].title}
+                className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
+              <div className="absolute bottom-4 left-4">
+                <span className={`px-3 py-1 rounded-full text-xs font-bold border ${services[activeServiceTab].badgeColor}`}>
+                  {services[activeServiceTab].tag}
+                </span>
+              </div>
+            </div>
+
+            <div className="lg:col-span-6 space-y-6">
+              <h3 className="text-2xl sm:text-3xl font-heading font-black text-slate-950 tracking-tight">
+                {services[activeServiceTab].title}
+              </h3>
+
+              <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+                {services[activeServiceTab].desc}
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 text-xs">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs">
+                  <span className="text-slate-500 block text-[11px] font-semibold">Guaranteed SLA</span>
+                  <span className="text-base font-bold text-slate-900 mt-1 block">{services[activeServiceTab].sla}</span>
+                </div>
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs">
+                  <span className="text-slate-500 block text-[11px] font-semibold">Vehicle Assignment</span>
+                  <span className="text-base font-bold text-brand-600 mt-1 block">{services[activeServiceTab].type}</span>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <Link
+                  to="/register/customer"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition shadow-md hover:scale-105 active:scale-95 cursor-pointer"
+                >
+                  <span>Dispatch with this Service</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ─────────────────────────────────────────────────────────────────────────────
+            6. ARCHITECTURAL PILLARS & FEATURES (Light Theme)
+        ───────────────────────────────────────────────────────────────────────────── */}
+        <section id="features" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white border border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-700 shadow-xs">
+              <Cpu className="w-3.5 h-3.5 text-brand-600" />
+              <span>Platform Capabilities</span>
             </span>
-            <h2 className="text-3xl sm:text-5xl font-heading font-black text-white tracking-tight">
-              Engineered for Every Cargo Dimension
+            <h2 className="text-3xl sm:text-5xl font-heading font-black text-slate-950 tracking-tight">
+              Built for High-Velocity Scale
+            </h2>
+            <p className="text-slate-600 text-sm sm:text-base">
+              Engineered with a clean separation of concerns, finite state machines, and cryptographic auditability.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            <div className="p-7 rounded-3xl bg-white/95 backdrop-blur-md border border-slate-200/90 hover:border-brand-500/50 hover:shadow-xl shadow-md shadow-slate-900/5 transition-all duration-300 space-y-4 group">
+              <div className="w-12 h-12 rounded-2xl bg-orange-50 text-brand-600 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
+                <Calculator className="w-6 h-6" />
+              </div>
+              <h4 className="text-lg font-bold text-slate-950">Volumetric Pricing</h4>
+              <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                Deterministic billable rating based on cubic parcel dimensions prevents carrier weight discrepancies.
+              </p>
+            </div>
+
+            <div className="p-7 rounded-3xl bg-white/95 backdrop-blur-md border border-slate-200/90 hover:border-emerald-500/50 hover:shadow-xl shadow-md shadow-slate-900/5 transition-all duration-300 space-y-4 group">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
+                <Navigation className="w-6 h-6" />
+              </div>
+              <h4 className="text-lg font-bold text-slate-950">Proximity Auto-Pairing</h4>
+              <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                Real-time driver location and workload quota balancing assigns pickups in under 15 minutes.
+              </p>
+            </div>
+
+            <div className="p-7 rounded-3xl bg-white/95 backdrop-blur-md border border-slate-200/90 hover:border-amber-500/50 hover:shadow-xl shadow-md shadow-slate-900/5 transition-all duration-300 space-y-4 group">
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
+                <RefreshCw className="w-6 h-6" />
+              </div>
+              <h4 className="text-lg font-bold text-slate-950">Self-Service Recovery</h4>
+              <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                Multi-attempt failed delivery recovery empowers customers to pick custom reschedule windows with 1-click.
+              </p>
+            </div>
+
+            <div className="p-7 rounded-3xl bg-white/95 backdrop-blur-md border border-slate-200/90 hover:border-purple-500/50 hover:shadow-xl shadow-md shadow-slate-900/5 transition-all duration-300 space-y-4 group">
+              <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <h4 className="text-lg font-bold text-slate-950">Immutable Event Logs</h4>
+              <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                Append-only audit trail logs every state transition, GPS waypoint, and actor timestamp securely.
+              </p>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ─────────────────────────────────────────────────────────────────────────────
+            7. FAQ ACCORDION SECTION (Light Theme)
+        ───────────────────────────────────────────────────────────────────────────── */}
+        <section id="faq" className="py-16 px-4 sm:px-8 max-w-4xl mx-auto">
+          <div className="text-center mb-12 space-y-3">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white border border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-700 shadow-xs">
+              <HelpCircle className="w-3.5 h-3.5 text-brand-600" />
+              <span>Got Questions?</span>
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-heading font-black text-slate-950 tracking-tight">
+              Frequently Asked Questions
             </h2>
           </div>
 
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0">
-            {services.map((s, idx) => (
-              <button
+          <div className="space-y-3.5">
+            {faqs.map((faq, idx) => (
+              <div
                 key={idx}
-                type="button"
-                onClick={() => setActiveServiceTab(idx)}
-                className={`px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
-                  activeServiceTab === idx
-                    ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30'
-                    : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
-                }`}
+                className="rounded-2xl border border-slate-200 bg-white/95 backdrop-blur-md overflow-hidden transition shadow-sm hover:shadow-md"
               >
-                {s.tag}
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+                  className="w-full p-5 text-left flex items-center justify-between text-sm font-bold text-slate-900 cursor-pointer"
+                >
+                  <span>{faq.q}</span>
+                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${
+                    activeFaq === idx ? 'rotate-180 text-brand-600' : ''
+                  }`} />
+                </button>
+
+                {activeFaq === idx && (
+                  <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3.5">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* Highlighted Service Card */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center rounded-[2.5rem] bg-slate-900 border border-slate-800 p-6 sm:p-10 shadow-2xl">
-          <div className="lg:col-span-6 relative h-64 sm:h-80 rounded-3xl overflow-hidden border border-slate-800 shadow-inner">
-            <img
-              src={services[activeServiceTab].image}
-              alt={services[activeServiceTab].title}
-              className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
-            <div className="absolute bottom-4 left-4">
-              <span className={`px-3 py-1 rounded-full text-xs font-bold border ${services[activeServiceTab].badgeColor}`}>
-                {services[activeServiceTab].tag}
-              </span>
-            </div>
-          </div>
-
-          <div className="lg:col-span-6 space-y-6">
-            <h3 className="text-2xl sm:text-3xl font-heading font-black text-white tracking-tight">
-              {services[activeServiceTab].title}
-            </h3>
-
-            <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
-              {services[activeServiceTab].desc}
-            </p>
-
-            <div className="grid grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-500 block text-[11px]">Guaranteed SLA</span>
-                <span className="text-base font-bold text-white mt-0.5 block">{services[activeServiceTab].sla}</span>
-              </div>
-              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-500 block text-[11px]">Vehicle Assignment</span>
-                <span className="text-base font-bold text-brand-400 mt-0.5 block">{services[activeServiceTab].type}</span>
-              </div>
+        {/* ─────────────────────────────────────────────────────────────────────────────
+            8. CALL TO ACTION SECTION (Radiant Gradient Banner)
+        ───────────────────────────────────────────────────────────────────────────── */}
+        <section className="py-16 px-4 sm:px-8 max-w-7xl mx-auto">
+          <div className="relative rounded-[2.5rem] overflow-hidden bg-gradient-to-r from-brand-600 via-brand-500 to-rose-600 p-8 sm:p-16 text-white shadow-2xl shadow-brand-600/30 text-center space-y-6">
+            <div className="max-w-2xl mx-auto space-y-4">
+              <h2 className="text-3xl sm:text-5xl font-heading font-black tracking-tight text-white">
+                Accelerate Your Delivery Operations Today
+              </h2>
+              <p className="text-sm sm:text-base text-white/90 leading-relaxed">
+                Experience the speed, reliability, and precision of Ship It for your parcels, e-commerce orders, and corridor freight.
+              </p>
             </div>
 
-            <div className="pt-2">
+            <div className="flex flex-wrap items-center justify-center gap-3.5 pt-2">
               <Link
                 to="/register/customer"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-slate-900 hover:bg-slate-100 font-bold text-xs transition shadow-md"
+                className="px-8 py-4 rounded-full bg-white text-slate-900 hover:bg-slate-100 font-bold text-sm transition shadow-xl hover:scale-105 active:scale-95 cursor-pointer"
               >
-                <span>Dispatch with this Service</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                Create Free Account
+              </Link>
+              <Link
+                to="/login"
+                className="px-8 py-4 rounded-full bg-black/25 hover:bg-black/35 backdrop-blur-md border border-white/30 text-white font-bold text-sm transition cursor-pointer"
+              >
+                Log in to Portal
               </Link>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          6. ARCHITECTURAL PILLARS & FEATURES
-      ───────────────────────────────────────────────────────────────────────────── */}
-      <section id="features" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            <Cpu className="w-3.5 h-3.5 text-brand-400" />
-            <span>Platform Capabilities</span>
-          </span>
-          <h2 className="text-3xl sm:text-5xl font-heading font-black text-white tracking-tight">
-            Built for High-Velocity Scale
-          </h2>
-          <p className="text-slate-400 text-sm sm:text-base">
-            Engineered with a clean separation of concerns, finite state machines, and cryptographic auditability.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          
-          <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-brand-500/40 transition-all duration-300 space-y-4 group">
-            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Calculator className="w-6 h-6" />
+        {/* ─────────────────────────────────────────────────────────────────────────────
+            9. FOOTER (Light Theme)
+        ───────────────────────────────────────────────────────────────────────────── */}
+        <footer className="border-t border-slate-200/90 bg-white/90 backdrop-blur-xl py-12 px-4 sm:px-8 text-xs text-slate-600">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+            
+            <div className="flex items-center gap-3">
+              <GatimanLogo to="/" />
+              <span className="text-slate-300">|</span>
+              <span className="text-slate-500 font-medium">Intelligent Last-Mile Logistics</span>
             </div>
-            <h4 className="text-base font-bold text-white">Volumetric Pricing</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Deterministic billable rating based on cubic parcel dimensions prevents carrier weight discrepancies.
-            </p>
-          </div>
 
-          <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-emerald-500/40 transition-all duration-300 space-y-4 group">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Navigation className="w-6 h-6" />
+            <div className="flex items-center gap-6 font-semibold">
+              <a href="https://github.com/rakshitp18/Last-Mile-Delivery-Tracker" target="_blank" rel="noopener noreferrer" className="hover:text-brand-600 transition flex items-center gap-1.5">
+                <span>GitHub</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+              <Link to="/login" className="hover:text-brand-600 transition">Portal Login</Link>
+              <a href="#tracking" className="hover:text-brand-600 transition">Live Radar</a>
             </div>
-            <h4 className="text-base font-bold text-white">Proximity Auto-Pairing</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Real-time driver location and workload quota balancing assigns pickups in under 15 minutes.
-            </p>
-          </div>
 
-          <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-amber-500/40 transition-all duration-300 space-y-4 group">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <RefreshCw className="w-6 h-6" />
+            <div className="text-center sm:text-right">
+              <p>© 2026 <strong className="text-slate-900">Rakshit Pandey</strong>. All Rights Reserved.</p>
             </div>
-            <h4 className="text-base font-bold text-white">Self-Service Recovery</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Multi-attempt failed delivery recovery empowers customers to pick custom reschedule windows with 1-click.
-            </p>
+
           </div>
+        </footer>
 
-          <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all duration-300 space-y-4 group">
-            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
-            <h4 className="text-base font-bold text-white">Immutable Event Logs</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Append-only audit trail logs every state transition, GPS waypoint, and actor timestamp securely.
-            </p>
-          </div>
-
-        </div>
-      </section>
-
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          7. FAQ ACCORDION SECTION
-      ───────────────────────────────────────────────────────────────────────────── */}
-      <section id="faq" className="py-16 px-4 sm:px-8 max-w-4xl mx-auto">
-        <div className="text-center mb-12 space-y-3">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            <HelpCircle className="w-3.5 h-3.5 text-brand-400" />
-            <span>Got Questions?</span>
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-heading font-black text-white tracking-tight">
-            Frequently Asked Questions
-          </h2>
-        </div>
-
-        <div className="space-y-3">
-          {faqs.map((faq, idx) => (
-            <div
-              key={idx}
-              className="rounded-2xl border border-slate-800 bg-slate-900/60 overflow-hidden transition"
-            >
-              <button
-                type="button"
-                onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
-                className="w-full p-5 text-left flex items-center justify-between text-sm font-bold text-white cursor-pointer"
-              >
-                <span>{faq.q}</span>
-                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${
-                  activeFaq === idx ? 'rotate-180 text-brand-400' : ''
-                }`} />
-              </button>
-
-              {activeFaq === idx && (
-                <div className="px-5 pb-5 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-slate-800/60 pt-3">
-                  {faq.a}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          8. CALL TO ACTION SECTION
-      ───────────────────────────────────────────────────────────────────────────── */}
-      <section className="py-16 px-4 sm:px-8 max-w-7xl mx-auto">
-        <div className="relative rounded-[2.5rem] overflow-hidden bg-gradient-to-r from-brand-700 via-brand-600 to-rose-600 p-8 sm:p-14 text-white shadow-2xl text-center space-y-6">
-          <div className="max-w-2xl mx-auto space-y-4">
-            <h2 className="text-3xl sm:text-5xl font-heading font-black tracking-tight">
-              Accelerate Your Delivery Operations Today
-            </h2>
-            <p className="text-sm sm:text-base text-white/80 leading-relaxed">
-              Experience the speed, reliability, and precision of Ship It for your parcels, e-commerce orders, and corridor freight.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <Link
-              to="/register/customer"
-              className="px-8 py-3.5 rounded-full bg-white text-slate-900 hover:bg-slate-100 font-bold text-sm transition shadow-lg hover:scale-105 active:scale-95"
-            >
-              Create Free Account
-            </Link>
-            <Link
-              to="/login"
-              className="px-8 py-3.5 rounded-full bg-black/30 hover:bg-black/40 backdrop-blur-md border border-white/20 text-white font-bold text-sm transition"
-            >
-              Log in to Portal
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          9. FOOTER
-      ───────────────────────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-slate-900 bg-slate-950 py-12 px-4 sm:px-8 text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-          
-          <div className="flex items-center gap-3">
-            <GatimanLogo to="/" textColor="text-white" />
-            <span className="text-slate-600">|</span>
-            <span>Intelligent Last-Mile Logistics</span>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <a href="https://github.com/rakshitp18/Last-Mile-Delivery-Tracker" target="_blank" rel="noopener noreferrer" className="hover:text-white transition flex items-center gap-1.5">
-              <span>GitHub</span>
-              <ExternalLink className="w-3 h-3" />
-            </a>
-            <Link to="/login" className="hover:text-white transition">Portal Login</Link>
-            <a href="#tracking" className="hover:text-white transition">Live Radar</a>
-          </div>
-
-          <div className="text-center sm:text-right">
-            <p>© 2026 **Rakshit Pandey**. All Rights Reserved.</p>
-          </div>
-
-        </div>
-      </footer>
+      </main>
 
     </div>
   );

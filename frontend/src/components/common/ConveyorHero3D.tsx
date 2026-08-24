@@ -246,7 +246,15 @@ function createPhoneScreenTexture(): THREE.CanvasTexture {
 // 3D CONVEYOR SCENE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const ConveyorHero3D: React.FC = () => {
+export interface ConveyorHero3DProps {
+  className?: string;
+  showOverlay?: boolean;
+}
+
+export const ConveyorHero3D: React.FC<ConveyorHero3DProps> = ({
+  className = "absolute inset-0",
+  showOverlay = true,
+}) => {
   const mountRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -255,8 +263,7 @@ export const ConveyorHero3D: React.FC = () => {
 
     // 1. Scene & Renderer
     const scene = new THREE.Scene();
-    // Warm pastel background matching the reference studio environment
-    scene.background = new THREE.Color('#ebf3a9');
+    scene.background = null; // Transparent to blend seamlessly into light background
 
     let width = container.clientWidth;
     let height = container.clientHeight;
@@ -272,7 +279,7 @@ export const ConveyorHero3D: React.FC = () => {
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       powerPreference: 'high-performance',
-      alpha: false,
+      alpha: true,
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -589,13 +596,17 @@ export const ConveyorHero3D: React.FC = () => {
   }, []);
 
   return (
-    <div className="absolute inset-0 overflow-hidden select-none pointer-events-none">
+    <div className={`${className} overflow-hidden select-none pointer-events-none`}>
       {/* 3D WebGL Canvas */}
       <div ref={mountRef} className="w-full h-full" />
 
-      {/* Subtle Cinematic Vignette for Text Contrast (Preserves Bright Studio Look) */}
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/30 to-transparent pointer-events-none" />
+      {/* Light Atmospheric Vignette for Content Readability */}
+      {showOverlay && (
+        <>
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-50 via-slate-50/20 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-50/90 via-slate-50/40 to-transparent pointer-events-none" />
+        </>
+      )}
     </div>
   );
 };
