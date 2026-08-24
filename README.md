@@ -10,7 +10,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
-**A high-performance last-mile logistics orchestration platform featuring deterministic volumetric rate calculations, real-time GPS telemetry radar, automated proximity-based driver pairing, and multi-tenant operations.**
+**An enterprise-grade real-time last-mile logistics orchestration platform featuring deterministic volumetric rating, sub-second GPS telemetry radar, automated proximity-based fleet pairing, and multi-tenant operational consoles for Admins, Drivers, and Customers.**
 
 [🌐 Live Web Application](https://last-mile-delivery-tracker-9t8c.vercel.app) • [🔌 Live REST API](https://shipit-sl8q.onrender.com/api/health) • [📖 Architecture Document](DESIGN.md)
 
@@ -18,46 +18,84 @@
 
 </div>
 
-## 📸 Platform Showcase
-
-### 1. Interactive Landing Page & 3D Logistics Hero
-> Modern SaaS landing interface with integrated 3D conveyor belt mechanics and immediate booking CTAs.
-
-![Ship It Landing Hero](docs/screenshots/01_hero_landing.png)
+## 📸 Complete Platform Showcase
 
 ---
 
-### 2. Real-Time Parcel Radar & Telemetry Cockpit
+### 🌟 1. Public Portal & Customer Experience
+
+#### Interactive Landing Page & 3D Logistics Hero
+> Modern light-themed SaaS landing interface with integrated 3D conveyor belt mechanics and immediate booking CTAs.
+
+![Ship It Landing Hero](docs/screenshots/01_hero_landing.png)
+
+#### Real-Time Parcel Radar & Telemetry Cockpit
 > Sub-second tracking with live driver coordinates, corridor milestone progress, and automated ETA countdowns.
 
 ![Live Telemetry Radar](docs/screenshots/02_live_radar_tracking.png)
 
----
-
-### 3. Dynamic Volumetric Rate Calculator
+#### Dynamic Volumetric Rate Calculator
 > Instant billable weight computation using standard dimensional freight formulas (`(L × B × H) / 5000`) with real-time price estimation across delivery zones.
 
 ![Volumetric Rate Calculator](docs/screenshots/03_rate_calculator.png)
 
----
-
-### 4. Multi-Modal Fleet & Corridor Services
+#### Multi-Modal Fleet & Corridor Services
 > Horizontally scrollable fleet showcase spanning Inter-City Express, Urban Hyperlocal, Heavy B2B Freight, and EV clean fleets.
 
 ![Fleet and Services](docs/screenshots/04_fleet_services.png)
 
 ---
 
-### 5. Role-Based Operations Control Center
-> Centralized dispatch hub for fleet assignment, booking pipelines, real-time revenue metrics, and order recovery management.
+### 🏢 2. Enterprise Operations & Admin Dispatch Console
+
+#### Operations Cockpit & Executive KPIs
+> Centralized dispatch hub for active bookings, in-transit telemetry, available driver capacity, and billing analytics.
 
 ![Enterprise Operations Cockpit](docs/screenshots/06_enterprise_dashboard.png)
 
+#### Live Dispatch & Order Pipeline
+> Real-time shipment queue with route matching, weight tier classification, assigned driver partner tracking, and status inspection.
+
+![Admin Dispatch Console](docs/screenshots/09_admin_dispatch_console.png)
+
+#### Fleet & Driver Partner Management
+> Real-time multi-tier dispatch network, vehicle telemetry, payload capacities, active load quotas, and on-duty controls.
+
+![Admin Fleet Management](docs/screenshots/10_admin_fleet_management.png)
+
+#### Dynamic Rate Cards & Zone Matrix
+> Configurable rate slabs, volumetric multipliers, COD surcharges, and interactive live billing simulator.
+
+![Admin Rate Cards and Zones](docs/screenshots/11_admin_rate_card_zones.png)
+
 ---
 
-## 🌟 Key Platform Features
+### 🚚 3. Field Delivery Driver App
 
-- 🏎️ **Deterministic Volumetric Rating**: Computes billable freight weight as `max(Dead Weight, (L × B × H) / 5000)` with customizable base rates, distance tiers, and COD handling fees.
+#### Driver Run Sheet & Live Assignments
+> Mobile-responsive driver portal displaying assigned pickup/drop details, customer contact triggers, on-duty toggles, and direct completion actions.
+
+![Driver Dashboard](docs/screenshots/07_driver_dashboard.png)
+
+---
+
+### 👤 4. Customer Self-Service & Booking Wizard
+
+#### 6-Step Guided Shipment Booking
+> Intuitive shipment creation workflow with address auto-complete, multi-box dimensional configuration, rate estimation, and instant payment checkout.
+
+![Customer Order Booking](docs/screenshots/12_customer_order_booking.png)
+
+#### Multi-Role Authentication Portal
+> Seamless sign-in with Google OAuth 2.0 Identity Services, role-based demo accounts, and encrypted JWT credential exchange.
+
+![Auth Portal](docs/screenshots/05_auth_portal.png)
+
+---
+
+## 🌟 Key Platform Capabilities
+
+- 🏎️ **Deterministic Volumetric Rating Engine**: Computes billable freight weight as `max(Dead Weight, (L × B × H) / 5000)` with customizable base rates, distance tiers, and COD handling fees.
 - 📡 **Real-Time GPS Telemetry & STOMP WebSockets**: Instant driver location streaming over WebSockets with live Leaflet map rendering and milestone status transitions.
 - 🤖 **Automated Driver Dispatching**: Nearest-available delivery agent pairing based on operational zones and driver vehicle capacities.
 - 🔐 **Dual Authentication & Security**: Stateless JWT authentication with BCrypt hashing and Google OAuth 2.0 Identity Services.
