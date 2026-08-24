@@ -178,8 +178,9 @@ export const SmoothTab: React.FC<SmoothTabProps> = ({
             style={{ height: 'calc(100% - 12px)', top: '6px' }}
             transition={{
               type: 'spring',
-              stiffness: 400,
-              damping: 30,
+              stiffness: 320,
+              damping: 28,
+              mass: 0.7,
             }}
           />
         )}

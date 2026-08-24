@@ -317,11 +317,12 @@ export const LandingPage: React.FC = () => {
                   {isActive && (
                     <motion.div
                       layoutId="landing-nav-active-pill"
-                      className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600 via-rose-600 to-brand-600 shadow-md shadow-red-600/30"
+                      className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600 via-rose-600 to-brand-600 shadow-lg shadow-red-600/30"
                       transition={{
                         type: 'spring',
-                        stiffness: 400,
-                        damping: 30,
+                        stiffness: 320,
+                        damping: 28,
+                        mass: 0.7,
                       }}
                     />
                   )}
