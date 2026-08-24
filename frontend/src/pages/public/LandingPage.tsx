@@ -219,14 +219,14 @@ export const LandingPage: React.FC = () => {
     <div className="relative min-h-screen bg-slate-50/80 text-slate-900 font-sans selection:bg-brand-500 selection:text-white antialiased overflow-x-hidden">
       
       {/* ─────────────────────────────────────────────────────────────────────────────
-          FULL-SCREEN 3D CONVEYOR BELT ANIMATION (Right Side Viewport Staging)
+          FULL-SCREEN 3D CONVEYOR BELT ANIMATION (Balanced Right-Center Staging)
       ───────────────────────────────────────────────────────────────────────────── */}
-      <div className="fixed top-0 right-0 bottom-0 w-full sm:w-3/5 lg:w-1/2 pointer-events-none overflow-hidden z-0">
+      <div className="fixed top-0 right-0 bottom-0 w-full sm:w-3/4 lg:w-[58%] pointer-events-none overflow-hidden z-0">
         {/* Full Bleed 3D Canvas */}
         <ConveyorHero3D className="absolute inset-0 w-full h-full" showOverlay={false} />
         
         {/* Subtle left-side feather to seamlessly blend with white background */}
-        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-slate-50 to-transparent pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 w-36 bg-gradient-to-r from-slate-50 to-transparent pointer-events-none" />
       </div>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
